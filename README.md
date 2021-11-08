@@ -1,2 +1,6 @@
 # daddy_issues_simulator
-For daddy vs daddy needs
+To run:
+```
+python simulator.py --duel <daddy1> <daddy2> -c
+python simulator.py --crunch 1000
+```
