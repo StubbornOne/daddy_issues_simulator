@@ -212,7 +212,7 @@ class Curze(Primarch):
           ]
         )
         self.mv = 19
-        self.cover = 4 #Shrouded and Stealth. Fun note: Corax has no Stealth LOL
+        self.cover = 4
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
@@ -347,12 +347,11 @@ class Corax(Primarch):
             [],
           [PanoplyOfTheRavenLord()],
           [
-              "Sire of the Raven Guard", "Shadowed Lord",
+              "Sire of the Raven Guard", "Shadowed Lord", "Shroud Bombs",
               "Hit and Run",
               "Fighting Style"
           ]
         )
-        #self.mv = 19 #not coding the broken version
         if time == "Post-Isstvan":
             self.W = 5
             self.shadow_W = 5
@@ -439,6 +438,8 @@ def createPrimarchFromName(name):
         return Fulgrim("Blade of the Laer")
     elif name == "Perturabo_Fists":
         return Perturabo("Fists")
+    elif name == "Khan_Afoot":
+        return Khan("Afoot")
     elif name == "Sanguinius_Spear":
         return Sanguinius("Spear of Telesto")
     elif name == "Ferrus_Fists":
@@ -452,5 +453,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  "Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

@@ -34,7 +34,7 @@ def WildfirePanoplyStart(primarch, combat_round):
 #####START OF COMBAT: CHARGE
 
 def ChargeBonus(primarch, defender, combat_round):
-    if primarch.charge:
+    if primarch.charge and "Shroud Bombs" not in defender.rules:
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
@@ -438,7 +438,7 @@ def ReapingBlowEnd(primarch, opponent, combat_round):
         print("Reaping Blow: %s returns to I%d" % (primarch.name, primarch.I))
 
 def ChargeBonusEnd(primarch, opponent, combat_round):
-    if primarch.charge:
+    if primarch.charge and "Shroud Bombs" not in opponent.rules:
         primarch.A -= 1
 
 def CounterAttackEnd(primarch, opponent, combat_round):

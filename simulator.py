@@ -13,6 +13,7 @@ def crunch(samples, MODE_CHARGE):
     stdout = sys.stdout
     for i in range(numPrimarchs - 1):
         for j in range(i+1, numPrimarchs):
+            #print(primarch_names[i], primarch_names[j])
             for x in range(1, samples+1):
                 primarchA = createPrimarchFromName(primarch_names[i])
                 primarchB = createPrimarchFromName(primarch_names[j])

@@ -29,10 +29,10 @@ One attack from Axe of Helwinter (assume WS9)
 1.5 * 1/2 * 2/3 / 3 = 0.167
 
 More precisely calculations needed, but from the gist of it; T7/3++-equiv spend all on Axe; everyone else 5-1 split
-Ok I crunched it against Ferrus; indeed, spent all on Axe if T7 and 3++
+Ok I crunched it against Ferrus; indeed, spend all on Axe if T7 and 3++
 """
-def predictSeverLife(defender):
-    if (defender.T <= 6 and defender.invuln_melee > 3) and not SangCharged(defender):
+def predictSeverLife(attacker, defender):
+    if ((attacker.S >= defender.T) and defender.invuln_melee > 3) and not SangCharged(defender):
         return True
     return False
 
@@ -469,7 +469,7 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
         elif attacker.name == "Leman Russ":
-            if predictSeverLife(defender):
+            if predictSeverLife(attacker, defender):
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
             else:
