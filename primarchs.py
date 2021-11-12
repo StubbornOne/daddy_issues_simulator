@@ -17,10 +17,7 @@ class Primarch:
         self.LD = LD
         #the shadow is to backup characteristics in the event of temporary changes, e.g. Blind, Concuss
         #shadow should always contain (original + permanent effects)
-        #note: preternatural counted as permanent, because H&R is not implemented
-        #if H&R is implemented, just reset using (if primarch.name == "Guilliman": WS = shadow_WS = 7)
-        #this is insufficient for e.g. if Guilliman gains WS from Preter, loses WS from Disabling, then Challenge ends due to H&R or something - we need to "reset" WS with disabling strike accounted for
-        #But Horus doesn't have H&R so not in scope
+        #note: preternatural affects shadow_WS to handle Blind, will be reset if H&R using challenge_counter
         self.shadow_WS = WS
         self.shadow_BS = BS
         self.shadow_S = S
@@ -31,7 +28,6 @@ class Primarch:
         self.shadow_LD = LD
         self.armour = armour
         self.cover = 7
-        self.mv = 13 #this is just for determining first round, basically just movement + highest prob of 2d6
         self.invuln_shoot = invuln_shoot
         self.invuln_melee = invuln_melee
         self.shooting_weapons = shooting_weapons
@@ -113,7 +109,7 @@ class Lion(Primarch):
 class Fulgrim(Primarch):
     def __init__(self, weapon="Fireblade", childofterra=True):
         super().__init__("Fulgrim", 8,6,6,6,6,8,5,10,2,5,3, #sublime swordsman hardcoded
-            [Firebrand(), KrakGrenade()],
+            [Firebrand(), KrakGrenade()], #krak is 8" so dubious to throw, stick to Firebrand
             [],
             ["Gilded Panoply"]
         )
@@ -158,22 +154,23 @@ class Khan(Primarch):
                   "Hit and Run",
                   "Sire of the White Scars",
                   "Wildfire Panoply",
-                  "AUTOPASS_DANGEROUS_TERRAIN",
+                  #"AUTOPASS_DANGEROUS_TERRAIN",
               ])
         else:
-           super().__init__("Jaghatai Khan",7,6,6,7,6,7,7,10,2,5,3,
+            super().__init__("Jaghatai Khan",7,6,6,7,6,7,7,10,2,5,3,
                 [ArchaeotechPistol(), SojutsuHeavyBolter(), SojutsuHeavyBolter()], #there are two heavy bolters, but rules are quite explicit 1-rider = 1-weapon, so no point adding the 2nd bolter
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Sojutsu Voidbike", "Hammer of Wrath", "Unmatched Rider",
+                  "Sojutsu Voidbike", "Hammer of Wrath",
                   "Relentless",
                   "Sire of the White Scars",
                   "Wildfire Panoply",
-                  "AUTOPASS_DANGEROUS_TERRAIN",
+                  #"AUTOPASS_DANGEROUS_TERRAIN",
               ]
             )
-           self.mv = 19
+            #Unmatched Rider. Just jink for everything, it'll reset on your turn. It's possible the opponent will H&R and you'll get to Overwatch, but Overwatch was Snap Shot anyway
+            self.cover = 3
 
 class Russ(Primarch):
     def __init__(self):
@@ -181,7 +178,7 @@ class Russ(Primarch):
             [Scornspitter()],
           [SwordOfBalenight(),AxeOfHelwinter()],
           [
-            "Night Vision", "Counter-Attack", "Preternatural Senses",
+            "Counter-Attack", #"Night Vision", "Preternatural Senses",
             "Armour of Elavagar",
             "Weapon Mastery"
           ]
@@ -205,29 +202,27 @@ class Curze(Primarch):
             [Widowmakers()],
           [MercyAndForgiveness()],
           [
-            "Stealth", "Shrouded", "Night Vision", "Acute Senses",
-            "Sire of the Night Lords", #Impose Night Fighting
+            #"Night Vision", "Acute Senses",
+            #"Sire of the Night Lords", #To impose Night Fighting
             "Hit and Run",
             "Hammer of Wrath", "Nightmare Mantle",
           ]
         )
-        self.mv = 19
-        self.cover = 4
+        self.cover = 4 #stealth, shrouded
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
         super().__init__("Sanguinius",9,5,6,6,6,7,6,10,2,4,4,
             [Infernus(),
-             #FragGrenade() #Ignore until Blast is implemented, but Sang of all Primarchs may actually throw Frag
+             #FragGrenade() #Ignore until Blast is implemented, but Sang of all Primarchs may actually throw Frag. Not really. If Sang gets a shooting it's Infernus and then there's no shooting phase left (Frags can't Overwatch)
              ],
               [],
               [
-                  "Hammer of Wrath", "Great Wings", "Sky Strike",
+                  "Hammer of Wrath", "Great Wings", #"Sky Strike",
                   "Regalia Resplendent",
                   "Sire of the Blood Angels"
               ]
         )
-        self.mv = 19
         if weapon == "Encarmine":
             self.melee_weapons.append(BladeEncarmine())
         else:
@@ -283,7 +278,7 @@ class Mortarion(Primarch):
             [Lantern(), PhosphexBomb()],
           [Silence()],
           [
-              "AUTOPASS_TOUGHNESS", "AUTOPASS_DANGEROUS_TERRAIN",
+              #"AUTOPASS_TOUGHNESS", "AUTOPASS_DANGEROUS_TERRAIN",
               "Preternatural Resilience"
           ]
         )
@@ -347,7 +342,7 @@ class Corax(Primarch):
             [],
           [PanoplyOfTheRavenLord()],
           [
-              "Sire of the Raven Guard", "Shadowed Lord", "Shroud Bombs",
+              "Sire of the Raven Guard", "Shroud Bombs", #"Shadowed Lord",
               "Hit and Run",
               "Fighting Style"
           ]
@@ -453,5 +448,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  #"Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

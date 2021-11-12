@@ -126,7 +126,7 @@ def characteristicTest(threshold):
         return False
     return res <= threshold
 
-def decideFirstRound(mv1, mv2):
+def decideFirstRound():
     #res = random.randint(1, mv1+mv2)
     #return res <= mv1
     return roll(2) < 2

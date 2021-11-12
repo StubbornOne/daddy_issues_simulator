@@ -125,7 +125,7 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
         if len(getsHotRolls) > 0:
             print("Gets Hot!!!")
             woundRolls = resolveWounds(attacker, attacker_weapon, attacker, combat_round, getsHotRolls, "Shooting")
-            saveRolls = resolveSaves(attacker, attacker_weapon, attacker, combat_round, woundRolls, "Shooting")
+            saveRolls = resolveSaves(attacker, attacker_weapon, attacker, combat_round, woundRolls, "Shooting") #note, cover cannot be taken, but those with cover saves don't have GetsHot anyway
 
     hitRolls = discardFailedRolls(hitRolls)
     print("Successes: %s" % str([die.value for die in hitRolls]))
@@ -209,7 +209,7 @@ def resolveSaves(attacker, attacker_weapon, defender, combat_round, woundRolls, 
             saveRoll.evaluated = True
         elif woundRoll.AP > defender.armour:
             #use armour. We can technically choose cover/invuln, but I don't think there's a case within daddy duels to NOT choose armour
-            #ok there is a case: Precog Lorgar's rerollable 3++. Handle that if/when psychic is implemented
+            #ok there is a case: Precog Lorgar's rerollable 3++. Handle that if/when psychic is implemented (nah Precog allows 2+ armour to reroll too)
             #in daddy duels, there will never be AP3 (ignoring Sang's throw), so just chuck it below?
             threshold = defender.armour
             for rule in armour_rules:
@@ -476,9 +476,8 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 #use the Axe
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
-            #TODO: Smarter strat to figure out when to switch based on initiative of next round. but this'll go into decision trees...?
             if defender.T >=7 or needToConcuss(defender) or (defender.I > attacker.I and defender.name != "Angron") or defender.name == "Horus":
-                #use the HoD
+                #use the HoD. T7+ => HoD higher toWound, Angron -> use blade for chance of Murderous Strike, Horus -> Hand is always S10, higher I -> attempt to concuss and then switch to blade
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
             else:
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
@@ -736,7 +735,7 @@ def resolveGameTurnEnd(primarch1, primarch2):
 
 def duel(primarchA, primarchB, MODE_CHARGE):
     ended = False
-    who_goes_first = decideFirstRound(primarchA.mv, primarchB.mv)
+    who_goes_first = decideFirstRound()
     if who_goes_first:
         primarchA.active = True
     else:
