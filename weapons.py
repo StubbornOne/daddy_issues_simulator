@@ -141,7 +141,7 @@ class BladeEncarmine(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "Blade Encarmine",
-    lambda s: s+2,
+    lambda s: s+1,
     2,
     ["Shred"] #Rampage
     )
