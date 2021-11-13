@@ -92,8 +92,8 @@ class Lion(Primarch):
             self.melee_weapons.append(LionSword())
         self.invulnreroll = False
 
-    def handleStartOfPhase(self):
-        super().handleStartOfPhase()
+    def handleStartOfTurn(self):
+        super().handleStartOfTurn()
         self.invulnreroll = False #refresh
 
     def getAttacks(self, defender, combat_round):
