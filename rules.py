@@ -43,9 +43,11 @@ def CounterAttack(primarch, defender, combat_round):
         primarch.A += 1
         print("Counter-Attack: %s gets +1A for being charged!" % primarch.name)
 
-#NOTE: The claims on Lion's stasis-2-round-blind mathhammer turn out to be off: Blind must be IMMEDIATELY taken, whereas Stasis Grenades occur only AFTER successfulcharge/charged
 def StasisGrenades(primarch, defender, combat_round):
     if primarch.charge or defender.charge:
+        if "Serpent's Scales" in defender.rules:
+            if SerpentScalesSave():
+                return
         defender.I = 1
         defender.underStasis = True
         print("%s is under stasis!" % defender.name)
@@ -89,11 +91,11 @@ def FightingStyle(primarch, defender, combat_round):
     #primarch.rules.remove("FIGHTING_STYLE_DEATH_STRIKE")
     if (primarch.active) and "FIGHTING_STYLE_SHADOW_WALK" in primarch.rules:
         primarch.rules.remove("FIGHTING_STYLE_SHADOW_WALK")
-    #you will never use Death Strike
+    #you will never use Death Strike until IA Magnus is implemented
     #stick to: if your own turn, shadow-walk (for 2 rounds' worth)
     #then, Scourge
-    #it's ok to shadow-walk against e.g. the Lion because he hits you on 3+ anyway, and even if blinded, you don't want to risk getting caught unblinded next turn
-    if (primarch.active):
+    #it's ok to shadow-walk against e.g. the Lion because he hits you on 3+ so nerf to 4+. Even if he's blinded, you don't want to risk getting caught unblinded next turn
+    if (primarch.active or combat_round==0):
         print("Fighting Style: Chose Shadow-Walk")
         primarch.rules.append("FIGHTING_STYLE_SHADOW_WALK")
     else:

@@ -76,7 +76,7 @@ def scaled_score(crunch_results,samples=1000):
                 ratio = float(wins)/samples
                 scores[i] += ratio
         #scores[i] /= (numPrimarchs-1)
-        scores[i] /= 17
+        scores[i] /= 17 if i <= 18 else 18
     results = list(zip(scores,primarch_names))
     results.sort(key=lambda x: x[0],reverse=True)
     for i in range(numPrimarchs):
