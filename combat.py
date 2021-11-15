@@ -464,7 +464,7 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 #no reason to use Worldbreaker
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             else:
-                #split X-1 Talon-Worldbreaker. Why? To maximise Master-crafted
+                #split X-1 Talon-Worldbreaker. Master-crafted will improve Worldbreaker's 1 attack
                 #though if you really need to concuss you should spend more on Worldbreaker...
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
@@ -744,12 +744,6 @@ def duel(primarchA, primarchB, MODE_CHARGE):
     game_turn = 0
     combat_round = 0
     while not ended:
-        if primarchA.active:
-            primarchA.active = False
-            primarchB.active = True
-        else:
-            primarchA.active = True
-            primarchB.active = False
         print("Player Turn %d" % (player_turn + 1))
         #now actually do the turn!
         ended = playerTurn(primarchA, primarchB, combat_round, MODE_CHARGE)
@@ -762,6 +756,12 @@ def duel(primarchA, primarchB, MODE_CHARGE):
         if player_turn % 2 == 0:
             game_turn += 1
             resolveGameTurnEnd(primarchA, primarchB)
+        if primarchA.active:
+            primarchA.active = False
+            primarchB.active = True
+        else:
+            primarchA.active = True
+            primarchB.active = False
         print()
     #check the primarch wounds and declare victor
     print("END OF DUEL")
