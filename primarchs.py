@@ -42,7 +42,7 @@ class Primarch:
         #counter, substracts every End-Of-Assault-Phase (including the turn concussing turn)
         self.underConcuss = 0
         self.underBlind = 0
-        self.underStasis = False #no need to be counter because it's easily trackable
+        self.underStasis = False #no need to be counter because it's easily trackable by game turn
         self.active = False #not your turn
         self.charge = False
         self.in_combat = False #setup during duel
@@ -68,7 +68,6 @@ class Primarch:
     def getAttacks(self, defender, combat_round):
         return self.A
 
-    #only call at start of combat. DOES NOT remove the effect: at end of combat round check for these and remove if appropriate
     def handleStartOfTurn(self):
         for weapon in self.melee_weapons:
             if "Master-Crafted" in weapon.rules:
@@ -142,7 +141,6 @@ class Perturabo(Primarch):
         else:
             self.melee_weapons.append(Fists_Perturabo())
 
-#TODO: Unlike others, Khan's 3++ affects Overwatch. It's ok now but should be upgraded when charge is implemented
 #Fun stuff: RAW Khan has no invuln during Movement, Psyker, start-of-game... we'll assume this is a FW rule messup. Doesn't affect current implementation anyway
 class Khan(Primarch):
     def __init__(self, mode="Mounted"):
@@ -152,7 +150,7 @@ class Khan(Primarch):
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Sire of the White Scars",
+                  #"Sire of the White Scars", #hardcoded
                   "Wildfire Panoply",
                   #"AUTOPASS_DANGEROUS_TERRAIN",
               ])
@@ -164,7 +162,7 @@ class Khan(Primarch):
                   "Hit and Run",
                   "Sojutsu Voidbike", "Hammer of Wrath",
                   "Relentless",
-                  "Sire of the White Scars",
+                  #"Sire of the White Scars",
                   "Wildfire Panoply",
                   #"AUTOPASS_DANGEROUS_TERRAIN",
               ]
@@ -178,9 +176,10 @@ class Russ(Primarch):
             [Scornspitter()],
           [SwordOfBalenight(),AxeOfHelwinter()],
           [
-            "Counter-Attack", #"Night Vision", "Preternatural Senses",
             "Armour of Elavagar",
-            "Weapon Mastery"
+            "Counter-Attack"
+            #"Night Vision", "Preternatural Senses",
+            #"Weapon Mastery"
           ]
         )
 
@@ -190,9 +189,9 @@ class Dorn(Primarch):
             [VoiceOfTerra()],
           [StormsTeeth()],
           [
-            "Furious Charge",
+            "Auric Armour",
+            "Furious Charge"
             #"Sundering Blow", #unlikely to implement; mathhammer says Sundering is always strictly worse in daddy duels
-            "Auric Armour"
           ]
         )
 
@@ -218,9 +217,9 @@ class Sanguinius(Primarch):
              ],
               [],
               [
+                  "Sire of the Blood Angels",
                   "Hammer of Wrath", "Great Wings", #"Sky Strike",
                   "Regalia Resplendent",
-                  "Sire of the Blood Angels"
               ]
         )
         if weapon == "Encarmine":
@@ -249,9 +248,9 @@ class Angron(Primarch):
             [SpiteFurnace()],
           [GorefatherAndGorechild()],
           [
+              "Hatred", "Feel No Pain",
               #"Butcher's Nails",
-              "Furious Charge",
-              "Hatred", "Feel No Pain"
+              "Furious Charge"
           ]
         )
 
@@ -342,9 +341,9 @@ class Corax(Primarch):
             [],
           [PanoplyOfTheRavenLord()],
           [
+                "Fighting Style",
               "Sire of the Raven Guard", "Shroud Bombs", #"Shadowed Lord",
-              "Hit and Run",
-              "Fighting Style"
+              "Hit and Run"
           ]
         )
         if time == "Post-Isstvan":
@@ -373,11 +372,11 @@ class Alpharius(Primarch):
             [PlasmaBlaster()], #ignore assault grenades
           [PaleSpear()],
           [
+                "Preferred Enemy",
               "Counter-Attack", "Hammer of Wrath",
-              "Preferred Enemy", "Pythian Scales"
+              "Pythian Scales"
           ]
         )
-        #Alpharius' Plasma blaster is MC
         #this should be done by modifying the constructor of PlasmaBlaster
         self.shooting_weapons[0].rules.append("Master-Crafted")
         self.shooting_weapons[0].mastercrafted_rerolled = False
@@ -448,5 +447,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  #"Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  "Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

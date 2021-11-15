@@ -209,8 +209,6 @@ def resolveSaves(attacker, attacker_weapon, defender, combat_round, woundRolls, 
             saveRoll.evaluated = True
         elif woundRoll.AP > defender.armour:
             #use armour. We can technically choose cover/invuln, but I don't think there's a case within daddy duels to NOT choose armour
-            #ok there is a case: Precog Lorgar's rerollable 3++. Handle that if/when psychic is implemented (nah Precog allows 2+ armour to reroll too)
-            #in daddy duels, there will never be AP3 (ignoring Sang's throw), so just chuck it below?
             threshold = defender.armour
             for rule in armour_rules:
                 threshold = rule[1](attacker, attacker_weapon, defender, armour_threshold)
@@ -349,15 +347,6 @@ def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap s
     return False
 
 def shootingPhase(primarch1, primarch2, num_round):
-    #No rule that executes at the start of the shooting phase
-    """
-    rules1 = getStartOfShootingRules(primarch1)
-    for rule in rules1:
-        rule[1](primarch1, num_round)
-    rules2 = getStartOfShootingRules(primarch2)
-    for rule in rules2:
-        rule[1](primarch2, num_round)
-    """
     #check in combat
     if primarch1.in_combat:
         assert(primarch2.in_combat)
@@ -377,18 +366,7 @@ def shootingPhase(primarch1, primarch2, num_round):
     if primarch2.takeBlindTest:
         BlindTest(primarch2)
 
-    #No rule that executes at the end of the shooting phase
-    """
-    rules1 = getEndOfAssaultRules(primarch1)
-    for rule in rules1:
-        rule[1](primarch1, num_round)
-    rules2 = getEndOfAssaultRules(primarch2)
-    for rule in rules2:
-        rule[1](primarch2, num_round)
-    """
-
 ###########ASSAULT################
-
 
 def resolveMeleeAttacks(attacker, attacker_weapon, defender, combat_round, numAttacks):
     print("%s attacks with %s %d times!" %(attacker.name, attacker_weapon.name, numAttacks))
@@ -402,11 +380,8 @@ def resolveMeleeAttacks(attacker, attacker_weapon, defender, combat_round, numAt
     resolveSaves(attacker, attacker_weapon, defender, combat_round, woundRolls, "Melee")
     
     #POST ATTACK PHASE
-    #TODO: Implement all these as a Post-Attack
-    #all these can be post-save though?
     #Sever Life check
     if defender.sufferSeverLife and defender.W > 0:
-        #do 2d6 for Toughness
         do_sever_life = roll() + roll()
         print("Sever Life: %s rolls 2d6 against Toughness %d: %d" % (defender.name, defender.T, do_sever_life))
         if do_sever_life > defender.T:
@@ -446,10 +421,8 @@ def resolveHammerOfWrath(attacker, defender, combat_round):
     resolveSaves(attacker, attacker_weapon, defender, combat_round, woundRolls, "Melee")
     #done
 
-
 #return an array with the attacker, weapon and attacks allocated, representing primarch1's attacks
 #resolve init outside, for convenience
-#TODO: Weapon Mastery and smarter choosing (need more context)
 def allocateAttacks(attacker, defender, numAttacks, combat_round):
     assert (numAttacks >= 1)
     attacks = []
@@ -457,8 +430,6 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
         attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
     else: #should be 2
         assert (len(attacker.melee_weapons) == 2)
-        #hardcode
-        #since Hit & Run is not implemented, no need to consider is_own_combat_round (for Concussing)
         if attacker.name == "Horus Lupercal":
             if "IMMUNE_CONCUSS" in defender.rules or not needToConcuss(defender):
                 #no reason to use Worldbreaker
@@ -489,7 +460,8 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
 
 def pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch):
     weapon = attack[2]
-    if "Sire of the White Scars" in primarch.rules:
+    #if "Sire of the White Scars" in primarch.rules:
+    if type(primarch) is Khan:
         initiative_queue[10].append(attack) #Khan's special tier. May want to hardcode instead, in case a Khan vs Khan fight happens (then initiative matters)
     elif "Unwieldy" in weapon.rules:
         initiative_queue[0].append(attack)
@@ -780,9 +752,3 @@ def duel(primarchA, primarchB, MODE_CHARGE):
     else:
         print("Hm?")
     return (A_defeated, B_defeated)
-
-#MODE_CHARGE=True
-#pert = Perturabo()
-#pert.active = True
-#shootingPhase(pert, Ferrus(), 0)
-#duel(Alpharius(),Ferrus())

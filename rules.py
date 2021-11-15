@@ -117,7 +117,7 @@ def ReapingBlowStart(primarch, defender, combat_round):
 ########################PREHIT#############################
 
 #Die rules
-#TODO: MasterCrafted can actually choose the die to reroll. Matters for e.g. Spite Furnace
+#TODO: MasterCrafted can actually choose the die to reroll. Matters for e.g. Plasma Blaster
 def MasterCrafted(attacker, attacker_weapon, defender, combat_round, hitRoll):
     if not attacker_weapon.mastercrafted_rerolled:
         if not hitRoll.rerolled and not hitRoll.success:
@@ -332,7 +332,7 @@ def reduceWounds(attacker, attacker_weapon, defender, woundRolls, saveRolls):
         if not saveRolls[i].success:
             defender.W -= 1
 
-#Strikedown no longer halves Init by HH rulebook (orz! Tl;dr RTFM, not 1d4chan!)
+#Strikedown no longer halves Init by HH rulebook (but still forces attacks at Init 1 if charge, todo)
 """
 def Strikedown(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     #at least one wound, saved or not
