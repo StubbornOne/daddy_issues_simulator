@@ -85,7 +85,7 @@ def PreternaturalStrategyIncrement(primarch, defender, combat_round):
 
 def FightingStyle(primarch, defender, combat_round):
     #first, delete existing FIGHTING_STYLES
-    if "FIGHTING_STYLE_SCOURGE" in primarch.rules: #._.
+    if "FIGHTING_STYLE_SCOURGE" in primarch.rules: #._. abuse append/pop maybe?
         primarch.rules.remove("FIGHTING_STYLE_SCOURGE")
     #if "FIGHTING_STYLE_DEATH_STRIKE" in primarch.rules:
     #primarch.rules.remove("FIGHTING_STYLE_DEATH_STRIKE")
@@ -273,7 +273,7 @@ def WrathOfAngels(attacker, attacker_weapon, defender, woundRolls):
     new_woundRolls = []
     for woundRoll in woundRolls:
         if woundRoll.value == 6 and woundRoll.success == True:
-            print("Wrath of Angels: %d results in two wounds" % woundRoll.value)
+            print("Wrath of Angels: %d results in two wounds!" % woundRoll.value)
             new_woundRoll = WoundDie(6,attacker_weapon.AP)
             new_woundRoll.success = True
             new_woundRoll.evaluated = True
@@ -286,7 +286,7 @@ def Rending(attacker, attacker_weapon, defender, woundRolls):
         if woundRoll.value == 6:
             woundRoll.success = True
             woundRoll.AP = min(woundRoll.AP, 2)
-            print("Rending: 6 -> autoWound at AP2")
+            print("Rending: 6 -> auto-Wound at AP2")
 
 ##############PRESAVE##############
 #note: in practice you can decide the order of wounds to save against and then roll 1-by-1, e.g. in the case of Guilliman gaining FNP for some reason against ID
@@ -350,12 +350,11 @@ def Strikedown(attacker, attacker_weapon, defender, woundRolls, saveRolls):
 """
 
 def Concussive(attacker, attacker_weapon, defender, woundRolls, saveRolls):
+    if "IMMUNE_CONCUSS" in defender.rules:
+        #print("Concussive: %s is immune to Concussive" % defender.name)
+        return
     for i in range(len(saveRolls)):
-        if "IMMUNE_CONCUSS" in defender.rules:
-            print("Concussive: %s is immune to Concussive" % defender.name)
-            return
         if not saveRolls[i].success:
-            print("Applying Concussive")
             if "Serpent's Scales" in defender.rules:
                 if SerpentScalesSave():
                     print("Concussive: saved!")
@@ -425,19 +424,19 @@ def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
 #######END OF COMBAT
 def SireOfTheBloodAngelsEnd(primarch, opponent, combat_round):
     if combat_round == 0:
-        primarch.I -= 1
+        primarch.I = max(1,primarch.I - 1)
         primarch.A -= 1
         #print("Sire of the Blood Angels: %s's I and A reset to %d, %d" % (primarch.name, primarch.I, primarch.A))
 
 def DuellistsEdgeEnd(primarch, opponent, combat_round):
     if not (primarch.underConcuss > 0 or primarch.underStasis):
-        primarch.I -= 1
-        print("Duellist's Edge: %s returns to I%d" % (primarch.name, primarch.I))
+        primarch.I = max(1,primarch.I - 1)
+        #print("Duellist's Edge: %s returns to I%d" % (primarch.name, primarch.I))
 
 def ReapingBlowEnd(primarch, opponent, combat_round):
     if not (primarch.underConcuss > 0 or primarch.underStasis):
         primarch.I += 1
-        print("Reaping Blow: %s returns to I%d" % (primarch.name, primarch.I))
+        #print("Reaping Blow: %s returns to I%d" % (primarch.name, primarch.I))
 
 def ChargeBonusEnd(primarch, opponent, combat_round):
     if primarch.charge and "Shroud Bombs" not in opponent.rules:
@@ -455,13 +454,13 @@ def FuriousChargeEnd(primarch, opponent, combat_round):
 def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
     if primarch.charge:
         primarch.S = max(0, primarch.S - 1)
-        primarch.I = primarch.I - 1
+        primarch.I = max(1,primarch.I - 1)
         #print("Sire of the Raven Guard: %s loses the +1S +1I" % primarch.name)
 
 ###END OF ASSAULT
 def WildfirePanoplyEnd(primarch, combat_round):
     primarch.invuln_shoot = 5
-    print("Wildfire Panoply: %s's invuln returns to 5++" % primarch.name)
+    #print("Wildfire Panoply: %s's invuln returns to 5++" % primarch.name)
 
 ###############################RULE CATEGORIES###############################
 

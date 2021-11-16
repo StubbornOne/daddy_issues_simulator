@@ -28,6 +28,8 @@ class Primarch:
         self.shadow_LD = LD
         self.armour = armour
         self.cover = 7
+        self.how = False
+        self.allocated_attacks = False
         self.invuln_shoot = invuln_shoot
         self.invuln_melee = invuln_melee
         self.shooting_weapons = shooting_weapons
@@ -160,7 +162,7 @@ class Khan(Primarch):
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Sojutsu Voidbike", "Hammer of Wrath",
+                  "Sojutsu Voidbike", #"Hammer of Wrath",
                   "Relentless",
                   #"Sire of the White Scars",
                   "Wildfire Panoply",
@@ -169,6 +171,7 @@ class Khan(Primarch):
             )
             #Unmatched Rider. Just jink for everything, it'll reset on your turn. It's possible the opponent will H&R and you'll get to Overwatch, but Overwatch was Snap Shot anyway
             self.cover = 3
+            self.how = True
 
 class Russ(Primarch):
     def __init__(self):
@@ -204,10 +207,11 @@ class Curze(Primarch):
             #"Night Vision", "Acute Senses",
             #"Sire of the Night Lords", #To impose Night Fighting
             "Hit and Run",
-            "Hammer of Wrath", "Nightmare Mantle",
+            "Nightmare Mantle",
           ]
         )
         self.cover = 4 #stealth, shrouded
+        self.how = True
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
@@ -218,10 +222,11 @@ class Sanguinius(Primarch):
               [],
               [
                   "Sire of the Blood Angels",
-                  "Hammer of Wrath", "Great Wings", #"Sky Strike",
+                  "Great Wings", #"Sky Strike",
                   "Regalia Resplendent",
               ]
         )
+        self.how = True
         if weapon == "Encarmine":
             self.melee_weapons.append(BladeEncarmine())
         else:
@@ -356,7 +361,7 @@ class Corax(Primarch):
         else:
             self.shooting_weapons.append(ArchaeotechPistol())
             self.shooting_weapons.append(ArchaeotechPistol())
-            self.rules.append("Hammer of Wrath")
+            self.how = True
             self.rules.append("Korvidine Pinions")
         
     def getAttacks(self, defender, combat_round):
@@ -447,5 +452,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  #"Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

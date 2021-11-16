@@ -456,11 +456,19 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
             attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             #then servo arm attacks
             attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
+    attacker.allocated_attacks = True
     return attacks
 
+def attackAtThisInitiative(primarch, init):
+    #reaping blow and duellist's edge has been handled at start of round
+    if type(primarch) == Khan:
+        return init == 10
+    if len(primarch.melee_weapons) == 1 and "Unwieldy" in primarch.melee_weapons[0].rules: #this will skip Horus' Worldbreaker at init 1, which is expected because Horus will have already allocated
+        return init == 0
+    return primarch.I - 1 == init
+
 def pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch):
-    weapon = attack[2]
-    #if "Sire of the White Scars" in primarch.rules:
+    weapon = attack[1]
     if type(primarch) is Khan:
         initiative_queue[10].append(attack) #Khan's special tier. May want to hardcode instead, in case a Khan vs Khan fight happens (then initiative matters)
     elif "Unwieldy" in weapon.rules:
@@ -490,31 +498,31 @@ def fightSubPhase(primarch1, primarch2, combat_round, MODE_CHARGE):
 
     #Hammer of Wrath
     if MODE_CHARGE:
-        if primarch1.charge and "Hammer of Wrath" in primarch1.rules:
+        if primarch1.charge and primarch1.how:
             resolveHammerOfWrath(primarch1, primarch2, combat_round)
             if isDefeated(primarch1) or isDefeated(primarch2):
                 return True
-        elif primarch2.charge and "Hammer of Wrath" in primarch2.rules:
+        elif primarch2.charge and primarch2.how:
             resolveHammerOfWrath(primarch2, primarch1, combat_round)
             if isDefeated(primarch1) or isDefeated(primarch2):
                 return True
-    
-    numattacks1 = primarch1.getAttacks(primarch2, combat_round)
-    numattacks2 = primarch2.getAttacks(primarch1, combat_round)
 
     #initiative represented as an array of 11 arrays. Then, iterate backwards to resolve attacks
     initiative_queue = [[] for i in range(11)]
-    #primarchs choose weapons and attacks
-    attacks1 = allocateAttacks(primarch1, primarch2, numattacks1, combat_round)
-    attacks2 = allocateAttacks(primarch2, primarch1, numattacks2, combat_round)
-    for attack in attacks1:
-        pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch1)
-    for attack in attacks2:
-        pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch2)
 
     #now traverse the initiative queue to resolve attacks
     i = 10 #Khan's special priority
     while i >= 0:
+        if attackAtThisInitiative(primarch1, i) and not primarch1.allocated_attacks:
+            numattacks1 = primarch1.getAttacks(primarch2, combat_round)
+            attacks1 = allocateAttacks(primarch1, primarch2, numattacks1, combat_round) #for ppl with multiple weapons at diff initiative, must decide now
+            for attack in attacks1:
+                pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch1)
+        if attackAtThisInitiative(primarch2, i) and not primarch2.allocated_attacks:
+            numattacks2 = primarch2.getAttacks(primarch1, combat_round)
+            attacks2 = allocateAttacks(primarch2, primarch1, numattacks2, combat_round)
+            for attack in attacks2:
+                pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch2)
         attacks = initiative_queue[i]
         for attack in attacks:
             resolveMeleeAttacks(*attack)
@@ -525,6 +533,9 @@ def fightSubPhase(primarch1, primarch2, combat_round, MODE_CHARGE):
 
     #nobody croaked?
     #resolve end-of-combat effects (IWND etc)
+
+    primarch1.allocated_attacks = False
+    primarch2.allocated_attacks = False
 
     rules1 = getEndOfCombatRules(primarch1)
     if MODE_CHARGE:

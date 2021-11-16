@@ -17,7 +17,7 @@ def crunch(samples, MODE_CHARGE):
             for x in range(1, samples+1):
                 primarchA = createPrimarchFromName(primarch_names[i])
                 primarchB = createPrimarchFromName(primarch_names[j])
-                os.chdir("results")
+                #os.chdir("results")
                 #sys.stdout = open("%s_vs_%s_%d.txt" % (type(primarchA).__name__, type(primarchB).__name__,x),"w+")
                 sys.stdout = open(os.devnull, 'w')
                 result = duel(primarchA, primarchB, MODE_CHARGE)
@@ -29,7 +29,7 @@ def crunch(samples, MODE_CHARGE):
                 else:
                     crunch_results[i][j][result] += 1
                     crunch_results[j][i][1-result] += 1
-                os.chdir("..")
+                #os.chdir("..")
     for i in range(numPrimarchs):
         for j in range(numPrimarchs):
             if i != j:
