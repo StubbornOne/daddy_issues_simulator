@@ -73,7 +73,7 @@ def SireOfTheBloodAngelsStart(primarch, defender, combat_round):
 
 def PreternaturalStrategyIncrement(primarch, defender, combat_round):
     #not sure how Preter is supposed to work with Blind
-    #one can assume Blind's temporary WS1 supercedes and does not grow, but will reset into the 'grown' WS, which only resets when Challenge ends
+    #Based on wording, assume Blind's temporary WS1 supercedes and does not grow, but after Blind will turn into the 'grown' WS, which only resets when Challenge ends
     if primarch.shadow_WS == 10:
         return
     primarch.challenge_counter += 1
@@ -197,11 +197,11 @@ def Fleshbane(defender, threshold):
         #coding really brings out the need to be specific eh :) see if 40k rulings ever go to the lengths of MtG
         print("Fleshbane: Preternatural Resilience sets threshold to 6+")
         return 6
-    #can just set Auric Armour to negative priority, but just slap it here
-    if "Auric Armour" in defender.rules:
-        print("Fleshbane: Auric Armour sets threshold to 3+")
-        return 3
-    if "Pythian Scales" in defender.rules:
+    #can just set Auric Armour to lower priority
+    #if "Auric Armour" in defender.rules:
+    #    print("Fleshbane: Auric Armour sets threshold to 3+")
+    #    return 3
+    elif "Pythian Scales" in defender.rules:
         #Unlike Preter.Resilience, immunity = "ignore rule completely and so use strength" seems to be the logical flow
         #Has precedence too: https://its-changemod.tumblr.com/post/119679268478/okay-so-skitarii-ruststalkers-can-have-two-kit
         print("Fleshbane: Pythian Scales is immune...")
@@ -839,13 +839,9 @@ def IWNDTest(primarch1):
     IWND_roll = roll()
     print("%s rolls It Will Not Die: %d" % (primarch1.name, IWND_roll))
     if IWND_roll < 5:
-        if "Preternatural Resilience" in primarch1.rules:
+        if primarch1.rerollIWND:
             new_roll = roll()
-            print("Preternatural Resilience: %s -> %s" % (IWND_roll, new_roll))
-            IWND_roll = new_roll
-        elif "Blood of Fire" in primarch1.rules:
-            new_roll = roll()
-            print("Blood of Fire: %s -> %s" % (IWND_roll, new_roll))
+            print("Reroll: %s -> %s" % (IWND_roll, new_roll))
             IWND_roll = new_roll
     if IWND_roll >= 5:
         primarch1.W = min(primarch1.W + 1, primarch1.shadow_W)

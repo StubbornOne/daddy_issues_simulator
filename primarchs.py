@@ -29,7 +29,7 @@ class Primarch:
         self.armour = armour
         self.cover = 7
         self.how = False
-        self.allocated_attacks = False
+        self.rerollIWND = False
         self.invuln_shoot = invuln_shoot
         self.invuln_melee = invuln_melee
         self.shooting_weapons = shooting_weapons
@@ -48,6 +48,7 @@ class Primarch:
         self.active = False #not your turn
         self.charge = False
         self.in_combat = False #setup during duel
+        self.allocated_attacks = False
 
     def restoreWS(self):
         if not self.underBlind:
@@ -286,6 +287,7 @@ class Mortarion(Primarch):
               "Preternatural Resilience"
           ]
         )
+        self.rerollIWND = True
 
 class Magnus(Primarch):
     def __init__(self):
@@ -334,11 +336,11 @@ class Vulkan(Primarch):
           [Dawnbringer()],
           [
               "Draken Scale",
-              "Blood of Fire"
           ]
         )
         #Vulkan's heavy flamer is S6
         self.shooting_weapons[1].str_modifier = lambda s: 6
+        self.rerollIWND = True #Blood of Fire
 
 class Corax(Primarch):
     def __init__(self, time=""):
