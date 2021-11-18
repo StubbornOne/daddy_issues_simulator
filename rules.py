@@ -303,7 +303,7 @@ def ArmourOfTheWord(attacker, attacker_weapon, defender, threshold):
 def LeoninePanoply(attacker, attacker_weapon, defender, combat_round, saveRoll):
     if defender.invulnreroll:
         return
-    if not saveRoll.rerolled and not saveRoll.success:
+    if not saveRoll.rerolled and not saveRoll.success and saveRoll.saveType == SAVE_INVULN:
         old_value = saveRoll.value
         rerollDie(saveRoll)
         print("Leonine Panoply: %d -> %d" % (old_value, saveRoll.value))
@@ -312,7 +312,7 @@ def LeoninePanoply(attacker, attacker_weapon, defender, combat_round, saveRoll):
 def ArmourOfReason(attacker, attacker_weapon, defender, combat_round, saveRoll):
     if defender.invulnreroll:
         return
-    if not saveRoll.rerolled and not saveRoll.success:
+    if not saveRoll.rerolled and not saveRoll.success and saveRoll.saveType == SAVE_INVULN:
         old_value = saveRoll.value
         rerollDie(saveRoll)
         print("Armour of Reason: %d -> %d" % (old_value, saveRoll.value))
@@ -320,7 +320,7 @@ def ArmourOfReason(attacker, attacker_weapon, defender, combat_round, saveRoll):
 
 def RegaliaResplendent(attacker, attacker_weapon, defender, combat_round, saveRoll):
     if defender.charge:
-        if not saveRoll.rerolled and not saveRoll.success:
+        if not saveRoll.rerolled and not saveRoll.success and saveRoll.saveType == SAVE_INVULN:
             old_value = saveRoll.value
             rerollDie(saveRoll)
             print("Regalia Resplendent: %d -> %d" % (old_value, saveRoll.value))
