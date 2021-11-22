@@ -237,6 +237,10 @@ def AuricArmour(defender, threshold):
     print("Auric Armour limits wound threshold to 3+")
     return max(threshold, 3) #so 2+ to wound gets rejected
 
+def Rending(defender, threshold):
+    print("Rending: 6s always wound")
+    return min(threshold, 6)
+
 #POSTWOUND
 def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
     print("Graviton Pulse: Compare against Strength instead")
@@ -281,7 +285,7 @@ def WrathOfAngels(attacker, attacker_weapon, defender, woundRolls):
             new_woundRolls.append(new_woundRoll)
     woundRolls.extend(new_woundRolls)
 
-def Rending(attacker, attacker_weapon, defender, woundRolls):
+def RendingPost(attacker, attacker_weapon, defender, woundRolls):
     for woundRoll in woundRolls:
         if woundRoll.value == 6:
             woundRoll.success = True
@@ -296,6 +300,12 @@ def Rending(attacker, attacker_weapon, defender, woundRolls):
 def ArmourOfTheWord(attacker, attacker_weapon, defender, threshold):
     if "Force" in attacker_weapon.rules:
         print("Armour of the Word: 3++ against %s which has Force" % (attacker_weapon.name))
+        return 3
+    return threshold
+
+def ArmourOfElavagarShooting(attacker, attacker_weapon, defender, threshold):
+    if "Plasma" in attacker_weapon.rules or "Flamer" in attacker_weapon.rules: #no melta
+        print("Armour of Elavagar: 3++ against %s" % attacker_weapon.name)
         return 3
     return threshold
 
@@ -504,6 +514,7 @@ ShootingPreWoundThresholdAttackerRules = {
 
 ShootingPreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
+    "Rending": (1, Rending),
     }
 
 ShootingPostWoundAttackerRules = {
@@ -512,7 +523,7 @@ ShootingPostWoundAttackerRules = {
     "Murderous Strike (5+)": (1, MurderousStrike5),
     #"Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending": (1, Rending),
+    "Rending": (1, RendingPost),
     }
 
 ShootingPostWoundDefenderRules = {
@@ -535,6 +546,7 @@ ShootingPreSaveInvulnThresholdAttackerRules = {
 
 ShootingPreSaveInvulnThresholdDefenderRules = {
     #"Armour of the Word": (1, ArmourOfTheWord), #No force shooter I believe
+    "Armour of Elavagar": (1, ArmourOfElavagarShooting)
     }
 
 ShootingPreSaveDieAttackerRules = {
@@ -604,6 +616,7 @@ MeleePreWoundThresholdAttackerRules = {
 
 MeleePreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
+    "Rending": (1, Rending),
     }
 
 MeleePostWoundAttackerRules = {
@@ -612,7 +625,7 @@ MeleePostWoundAttackerRules = {
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
     "Wrath of Angels": (2, WrathOfAngels), #hack to ensure the new rolls have Instant Death
-    "Rending": (1, Rending),
+    "Rending": (1, RendingPost),
     }
 
 MeleePostWoundDefenderRules = {
