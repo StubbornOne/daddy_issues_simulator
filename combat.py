@@ -82,11 +82,8 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
     if attackType == "Melee":
         threshold = thresholdToHit(attacker.WS, defender.WS)
     else:
-        #should not be done like this...
-        if not attacker.active: #then it's an Overwatch
-            threshold = thresholdToShoot(1)
-        else:
-            threshold = thresholdToShoot(attacker.BS)
+        #2.0: All Primarch Snap Shots resolved at full BS
+        threshold = thresholdToShoot(attacker.BS)
     rules = collectRules(attacker, attacker_weapon, defender, combat_round, "%sPreHitThreshold" % (attackType))
     for rule in rules:
         threshold = rule[1](threshold)
@@ -281,6 +278,7 @@ def shootWeapon(attacker, weapon, defender, combat_round):
     if attacker.active:
         print("%s is shooting %s with %s!" % (attacker.name, defender.name, weapon.name))
     else:
+        #TODO: Decide whether to Overwatch or HtL (HtL seems to be the superior choice in duels unless the shot is AP2)
         print("Overwatch: %s is shooting %s with %s!" % (attacker.name, defender.name, weapon.name))
     
     #HITS
