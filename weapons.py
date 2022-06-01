@@ -89,7 +89,7 @@ class Forgebreaker_Perturabo(MeleeWeapon):
     "Forgebreaker",
                         lambda s: s * 2,
                         1,
-                        ["Strikedown", "Unwieldy", "Concussive", "Blind"]
+                        ["Strikedown", "Unwieldy", "Concussive"]
                     )
 
 class WhiteTigerDao(MeleeWeapon):
@@ -269,7 +269,7 @@ class PanoplyOfTheRavenLord(MeleeWeapon):
     "Panoply of the Raven Lord",
     lambda s: s,
     1,
-    ["Shred", "Blind"]
+    ["Shred"]
     )
 
 class PaleSpear(MeleeWeapon):
@@ -324,7 +324,7 @@ class FusilActinaeus(ShootingWeapon):
             18,
             "Assault",
             "2",
-            ["Twin-linked", "Blind", "Plasma", "Rending(3)"]
+            ["Twin-linked", "Plasma", "Rending(3)"]
         )
 
 #we assume we'll never throw frag (S3 AP-) and plasma (S4 AP4)

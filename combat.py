@@ -58,7 +58,7 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
                 hitRoll.evaluated = True
         print("Template: autohit! %d hits" % len(hitRolls))
         print("Successes: %s" % str([die.value for die in hitRolls]))
-        return hitRolls #some posthit may matter, e.g. if a template weapon has blind, but no such weap in daddy duels
+        return hitRolls
     elif "Line of Effect" in attacker_weapon.rules:
         hitRolls = [Die(7) for i in range(numAttacks)]
         for hitRoll in hitRolls:
@@ -67,7 +67,7 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
             hitRoll.evaluated = True
         print("Line of Effect: autohit!")
         print("Successes: %s" % str([die.value for die in hitRolls]))
-        return hitRolls #some posthit may matter, e.g. if a template weapon has blind, but no such weap in daddy duels
+        return hitRolls
     elif "Blast" in attacker_weapon.rules or "Large Blast" in attacker_weapon.rules: #only Pert atm
         print(numAttacks)
         hitRolls = [Die(7) for i in range(numAttacks)]
@@ -77,7 +77,7 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
             hitRoll.evaluated = True
         print("Blast: autohit!")
         print("Successes: %s" % str([die.value for die in hitRolls]))
-        return hitRolls #some posthit may matter, e.g. if a template weapon has blind, but no such weap in daddy duels
+        return hitRolls
     #calculate the thresholds, apply all rules
     if attackType == "Melee":
         threshold = thresholdToHit(attacker.WS, defender.WS)
@@ -358,11 +358,6 @@ def shootingPhase(primarch1, primarch2, num_round):
     if ended:
         return ended
     
-    #Blind tests
-    if primarch1.takeBlindTest:
-        BlindTest(primarch1)
-    if primarch2.takeBlindTest:
-        BlindTest(primarch2)
 
 ###########ASSAULT################
 
@@ -610,12 +605,6 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
             print("%s is no longer concussed" % (primarch2.name))
             primarch2.restoreI()
 
-    #Blind tests
-    if primarch1.takeBlindTest:
-        BlindTest(primarch1)
-    if primarch2.takeBlindTest:
-        BlindTest(primarch2)
-
     if MODE_CHARGE:
             primarch1.charge = False
             primarch2.charge = False
@@ -677,10 +666,6 @@ def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
         return ended
     print("###End of assault phase###")
 
-    #blind
-    resolveBlindEnd(primarch1)
-    resolveBlindEnd(primarch2)
-
     #Soul Blaze
     ended = SoulBlazeTest(primarch1, num_round)
     if ended:
@@ -694,14 +679,6 @@ def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
         IWNDTest(primarch1)
     else:
         IWNDTest(primarch2)
-
-def resolveBlindEnd(primarch1):
-    if primarch1.underBlind > 0:
-        primarch1.underBlind -= 1
-        if primarch1.underBlind == 0:
-            print("%s is no longer blinded" % (primarch1.name))
-            primarch1.restoreWS()
-            primarch1.restoreBS()
 
 def resolveGameTurnEnd(primarch1, primarch2):
     return

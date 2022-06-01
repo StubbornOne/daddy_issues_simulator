@@ -40,22 +40,17 @@ class Primarch:
         self.sufferSeverLife = False
         self.sufferSoulBlaze = False
         #self.underStrikedown = False   ##HH rulebbook: Strikedown NO LONGER HALVES INITIATIVE
-        self.takeBlindTest = False
         #counter, substracts every End-Of-Assault-Phase (including the turn concussing turn)
         self.underConcuss = 0
-        self.underBlind = 0
-        self.underStasis = False #no need to be counter because it's easily trackable by game turn
         self.active = False #not your turn
         self.charge = False
         self.in_combat = False #setup during duel
         self.allocated_attacks = False
 
     def restoreWS(self):
-        if not self.underBlind:
-            self.WS = self.shadow_WS
+        self.WS = self.shadow_WS
     def restoreBS(self):
-        if not self.underBlind:
-            self.BS = self.shadow_BS
+        self.BS = self.shadow_BS
     def restoreS(self):
         self.S = self.shadow_S
     def restoreT(self):
@@ -136,8 +131,6 @@ class Perturabo(Primarch):
             [Logos(), PrecisionBombardment()],
             [],
             [
-                "Furious Charge", #this is only within the enemy deployment zone. But only affects the alt. loadout Fists so whatever
-                "IMMUNE_CONCUSS", "IMMUNE_BLIND"
             ]
         )
         if weapon == "Forgebreaker":

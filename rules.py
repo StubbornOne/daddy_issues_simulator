@@ -63,16 +63,13 @@ def SireOfTheBloodAngelsStart(primarch, defender, combat_round):
         print("Sire of the Blood Angels: %s gains +1A +1I!" % primarch.name)
 
 def PreternaturalStrategyIncrement(primarch, defender, combat_round):
-    #not sure how Preter is supposed to work with Blind
-    #Based on wording, assume Blind's temporary WS1 supercedes and does not grow, but after Blind will turn into the 'grown' WS, which only resets when Challenge ends
     if primarch.shadow_WS == 10:
         return
     primarch.challenge_counter += 1
     if primarch.challenge_counter > 0:
         primarch.shadow_WS = primarch.shadow_WS + 1
-        if primarch.underBlind <= 0:
-            primarch.WS = primarch.shadow_WS
-            print("Preternatural Strategy: %s's WS increases to %d!" % (primarch.name, primarch.shadow_WS))
+        primarch.WS = primarch.shadow_WS
+        print("Preternatural Strategy: %s's WS increases to %d!" % (primarch.name, primarch.shadow_WS))
 
 def FightingStyle(primarch, defender, combat_round):
     #first, delete existing FIGHTING_STYLES
@@ -85,7 +82,6 @@ def FightingStyle(primarch, defender, combat_round):
     #you will never use Death Strike until IA Magnus is implemented
     #stick to: if your own turn, shadow-walk (for 2 rounds' worth)
     #then, Scourge
-    #it's ok to shadow-walk against e.g. the Lion because he hits you on 3+ so nerf to 4+. Even if he's blinded, you don't want to risk getting caught unblinded next turn
     if (primarch.active or combat_round==0):
         print("Fighting Style: Chose Shadow-Walk")
         primarch.rules.append("FIGHTING_STYLE_SHADOW_WALK")
@@ -172,12 +168,6 @@ def FightingStyleShadowWalk(threshold):
     return threshold + 1
 
 ####################POSTHIT#########################
-def Blind(attacker, attacker_weapon, defender, hitRolls):
-    if "IMMUNE_BLIND" in defender.rules:
-        print("Blind: %s is immune to Blind" % defender.name)
-    elif len(hitRolls) > 0:
-        print("Blind: %s must take a Blind test!" % defender.name)
-        defender.takeBlindTest = True
 
 ####################PREWOUND####################
 
@@ -405,16 +395,6 @@ def FeelNoPain(attacker, attacker_weapon, defender, woundRolls, saveRolls):
                 print("Wound counted as saved!")
                 saveRolls[i].success = True #"treat it as having been saved"
 
-def GildedPanoply(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for saveRoll in saveRolls:
-        if saveRoll.value == 6:
-            if ("IMMUNE_BLIND" in attacker.rules):
-                print("Gilded Panoply: %s is immune to Blind" % attacker.name)
-                return
-            print("Gilded Panoply: %s must take a blind test!" % attacker.name)
-            attacker.takeBlindTest = True
-            break #one will do
-
 def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     for i in range(len(saveRolls)):
         if not saveRolls[i].success:
@@ -492,7 +472,6 @@ ShootingPreHitDieDefenderRules = {
     }
 
 ShootingPostHitAttackerRules = {
-    "Blind": (1, Blind),
     }
 
 ShootingPostHitDefenderRules = {
@@ -594,7 +573,6 @@ MeleePreHitDieDefenderRules = {
     }
 
 MeleePostHitAttackerRules = {
-    "Blind": (1, Blind),
     }
 
 MeleePostHitDefenderRules = {
@@ -672,7 +650,6 @@ MeleePostSaveAttackerRules = {
 
 MeleePostSaveDefenderRules = {
     "Feel No Pain": (3, FeelNoPain), #want this to happen BEFORE reducing wounds
-    "Gilded Panoply": (1, GildedPanoply),
     }
 
 #ugggh
@@ -824,28 +801,8 @@ def SerpentScalesSave():
 def PreternaturalStrategyReset(primarch):
     primarch.shadow_WS -= primarch.challenge_counter
     primarch.challenge_counter = -1
-    #don't reset WS here; in case Guilliman is blinded
-    if primarch.underBlind == 0:
-        primarch.WS = primarch.shadow_WS
-    print("Preternatural Strategy: %s resets WS%d (before Blind)" % (primarch.name, primarch.WS))
-
-def BlindTest(primarch):
-    #if you're immune, you should not have reached this
-    print("Blind test: %s" % primarch.name)
-    success = InitiativeTest(primarch)
-    if not success:
-        #blind test failed
-        if "Serpent's Scales" in primarch.rules:
-            if SerpentScalesSave():
-                return
-        print("%s is blinded!" % (primarch.name))
-        if primarch.active == True:
-            primarch.underBlind = 3
-        else:
-            primarch.underBlind = 2
-        primarch.WS = 1
-        primarch.BS = 1
-    primarch.takeBlindTest = False
+    primarch.WS = primarch.shadow_WS
+    print("Preternatural Strategy: %s resets WS%d" % (primarch.name, primarch.WS))
 
 def IWNDTest(primarch1):
     IWND_roll = roll()
