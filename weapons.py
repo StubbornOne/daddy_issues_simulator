@@ -74,23 +74,23 @@ class LaerBlade(MeleeWeapon):
                     ["Rending"]
                     )
 
-class Fists_Perturabo(MeleeWeapon):
+class Logos_Melee(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Fists",
-                    lambda s: s,
-                    2,
-                    []
-                    )
+            "Logos",
+            lambda s: s+1,
+            2,
+            []
+        )
 
-class Forgebreaker_Perturabo(MeleeWeapon):
+class Forgebreaker_Desecrated(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Forgebreaker",
-                        lambda s: s * 2,
-                        1,
-                        ["Strikedown", "Unwieldy", "Concussive"]
-                    )
+            "Forgebreaker",
+            lambda s: 12,
+            1,
+            ["Unwieldy", "Master-Crafted", "Brutal(2)"]
+        )
 
 class WhiteTigerDao(MeleeWeapon):
     def __init__(self):
@@ -365,16 +365,16 @@ class KrakGrenade(ShootingWeapon):
             []
         )
 
-class Logos(ShootingWeapon):
+class LogosArray(ShootingWeapon):
     def __init__(self):
         super().__init__(
-            "Logos' wrist cannon",
+            "Logos Array",
             lambda s: 6,
             3,
-            24,
+            30,
             "Assault",
-            "3",
-            ["Twin-linked", "Rending"]
+            "6",
+            ["Twin-linked", "Shred", "Shell Shock(1)"]
         )
 
 class PrecisionBombardment(ShootingWeapon):

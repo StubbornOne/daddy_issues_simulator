@@ -127,18 +127,17 @@ class Fulgrim(Primarch):
 
 class Perturabo(Primarch):
     def __init__(self, weapon="Forgebreaker"):
-        super().__init__("Perturabo",8,6,7,6,6,5,4,10,2,3,3,
-            [Logos(), PrecisionBombardment()],
+        super().__init__("Perturabo",7,7,6,7,6,5,6,10,2,3,3,
+            [LogosArray()],
             [],
             [
             ]
         )
         if weapon == "Forgebreaker":
-            self.melee_weapons.append(Forgebreaker_Perturabo())
+            self.melee_weapons.append(Forgebreaker_Desecrated())
         else:
-            self.melee_weapons.append(Fists_Perturabo())
+            self.melee_weapons.append(Logos_Melee())
 
-#Fun stuff: RAW Khan has no invuln during Movement, Psyker, start-of-game... we'll assume this is a FW rule messup. Doesn't affect current implementation anyway
 class Khan(Primarch):
     def __init__(self, mode="Mounted"):
         if mode == "Afoot":
