@@ -703,16 +703,8 @@ def resolveBlindEnd(primarch1):
             primarch1.restoreWS()
             primarch1.restoreBS()
 
-def resolveStasisEnd(primarch1):
-    if primarch1.underStasis:
-        primarch1.underStasis = False
-        primarch1.restoreI()
-        print("%s is no longer under stasis" % primarch1.name)
-
 def resolveGameTurnEnd(primarch1, primarch2):
-    #Stasis
-    resolveStasisEnd(primarch1)
-    resolveStasisEnd(primarch2)
+    return
 
 def duel(primarchA, primarchB, MODE_CHARGE):
     ended = False

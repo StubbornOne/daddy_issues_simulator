@@ -43,15 +43,6 @@ def CounterAttack(primarch, defender, combat_round):
         primarch.A += 1
         print("Counter-Attack: %s gets +1A for being charged!" % primarch.name)
 
-def StasisGrenades(primarch, defender, combat_round):
-    if primarch.charge or defender.charge:
-        if "Serpent's Scales" in defender.rules:
-            if SerpentScalesSave():
-                return
-        defender.I = 1
-        defender.underStasis = True
-        print("%s is under stasis!" % defender.name)
-
 def FuriousCharge(primarch, defender, combat_round):
     if primarch.charge:
         primarch.S = min(primarch.S + 1, 10)
@@ -105,12 +96,12 @@ def FightingStyle(primarch, defender, combat_round):
 #technically it should be during attack selection?
 #also: does this actually modify the Init value? People assume so, but DEdge says "score" and RB says "fights at -1 Init", not change the value
 def DuellistsEdgeStart(primarch, defender, combat_round):
-    if not (primarch.underConcuss > 0 or primarch.underStasis): #we assume these take precedence
+    if not (primarch.underConcuss > 0): #we assume these take precedence
         primarch.I = min(10, primarch.I + 1)
         print("Duellist's Edge: %s gains +1I!" % primarch.name)
 
 def ReapingBlowStart(primarch, defender, combat_round):
-    if not (primarch.underConcuss > 0 or primarch.underStasis): #we assume these take precedence
+    if not (primarch.underConcuss > 0): #we assume these take precedence
         primarch.I = max(1, primarch.I - 1)
         print("Reaping Blow: %s has -1I!" % primarch.name)
 
@@ -163,9 +154,10 @@ def DarkFortuneHit(attacker, attacker_weapon, defender, combat_round, hitRoll):
 
 #Threshold rules
 
-def AbsoluteFocus(threshold):
-    print("Absolute Focus sets the threshold to at least 4+")
-    return min(4,threshold) #hits on minimum 4+; if 3+ all the better
+def LA_DA(threshold):
+    #Always Deathwing
+    print("Legiones Astartes (Dark Angels): Deathwing adds +1 to hit")
+    return threshold - 1
 
 def ArmourOfElavagar(threshold):
     print("Armour of Elavagar applies -1 to hit: new threshold %d" % (threshold+1))
@@ -237,10 +229,6 @@ def AuricArmour(defender, threshold):
     print("Auric Armour limits wound threshold to 3+")
     return max(threshold, 3) #so 2+ to wound gets rejected
 
-def Rending(defender, threshold):
-    print("Rending: 6s always wound")
-    return min(threshold, 6)
-
 #POSTWOUND
 def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
     print("Graviton Pulse: Compare against Strength instead")
@@ -285,12 +273,22 @@ def WrathOfAngels(attacker, attacker_weapon, defender, woundRolls):
             new_woundRolls.append(new_woundRoll)
     woundRolls.extend(new_woundRolls)
 
-def RendingPost(attacker, attacker_weapon, defender, woundRolls):
-    for woundRoll in woundRolls:
-        if woundRoll.value == 6:
-            woundRoll.success = True
-            woundRoll.AP = min(woundRoll.AP, 2)
-            print("Rending: 6 -> auto-Wound at AP2")
+def Rending(num):
+    def func(attacker, attacker_weapon, defender, woundRolls):
+        for woundRoll in woundRolls:
+            if woundRoll.value >= num:
+                woundRoll.success = True
+                woundRoll.AP = min(woundRoll.AP, 2)
+                print("Rending: %s -> auto-Wound at AP2" % num)
+    return func
+
+def Breaching(num):
+    def func(attacker, attacker_weapon, defender, woundRolls):
+        for woundRoll in woundRolls:
+            if woundRoll.value >= num:
+                woundRoll.AP = min(woundRoll.AP, 2)
+                print("Breaching: %s -> AP2" % num)
+    return func
 
 ##############PRESAVE##############
 #note: in practice you can decide the order of wounds to save against and then roll 1-by-1, e.g. in the case of Guilliman gaining FNP for some reason against ID
@@ -439,12 +437,12 @@ def SireOfTheBloodAngelsEnd(primarch, opponent, combat_round):
         #print("Sire of the Blood Angels: %s's I and A reset to %d, %d" % (primarch.name, primarch.I, primarch.A))
 
 def DuellistsEdgeEnd(primarch, opponent, combat_round):
-    if not (primarch.underConcuss > 0 or primarch.underStasis):
+    if not (primarch.underConcuss > 0):
         primarch.I = max(1,primarch.I - 1)
         #print("Duellist's Edge: %s returns to I%d" % (primarch.name, primarch.I))
 
 def ReapingBlowEnd(primarch, opponent, combat_round):
-    if not (primarch.underConcuss > 0 or primarch.underStasis):
+    if not (primarch.underConcuss > 0):
         primarch.I += 1
         #print("Reaping Blow: %s returns to I%d" % (primarch.name, primarch.I))
 
@@ -514,7 +512,6 @@ ShootingPreWoundThresholdAttackerRules = {
 
 ShootingPreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
-    "Rending": (1, Rending),
     }
 
 ShootingPostWoundAttackerRules = {
@@ -523,7 +520,10 @@ ShootingPostWoundAttackerRules = {
     "Murderous Strike (5+)": (1, MurderousStrike5),
     #"Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending": (1, RendingPost),
+    "Rending(3)": (1, Rending(3)), #.______.
+    "Rending(4)": (1, Rending(4)), #.______.
+    "Rending(5)": (1, Rending(5)), #.______.
+    "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
 ShootingPostWoundDefenderRules = {
@@ -573,7 +573,7 @@ ShootingPostSaveDefenderRules = {
 
 #modifiers, flat-threshold
 MeleePreHitThresholdAttackerRules = {
-    "An Absolute Focus": (0, AbsoluteFocus), #0 to execute latest, thus "superceding" (remember -1 to hit still affects Lion's 3+)
+    "Legiones Astartes (Dark Angels)": (1, LA_DA),
     }
 
 MeleePreHitThresholdDefenderRules = {
@@ -616,7 +616,6 @@ MeleePreWoundThresholdAttackerRules = {
 
 MeleePreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
-    "Rending": (1, Rending),
     }
 
 MeleePostWoundAttackerRules = {
@@ -625,7 +624,10 @@ MeleePostWoundAttackerRules = {
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
     "Wrath of Angels": (2, WrathOfAngels), #hack to ensure the new rolls have Instant Death
-    "Rending": (1, RendingPost),
+    "Rending(3)": (1, Rending(3)), #.______.
+    "Rending(4)": (1, Rending(4)), #.______.
+    "Rending(5)": (1, Rending(5)), #.______.
+    "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
 MeleePostWoundDefenderRules = {
@@ -709,7 +711,6 @@ StartOfAssaultRules = {
 ChargeRules = {
     "Furious Charge": (1, FuriousCharge),
     "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
-    "Stasis Grenades": (1,StasisGrenades),
     "Counter-Attack": (1,CounterAttack),
     }
 
@@ -718,13 +719,11 @@ StartOfCombatRules = {
     "Preternatural Strategy": (1, PreternaturalStrategyIncrement),
     "Fighting Style": (1, FightingStyle),
     "Duellist's Edge": (1,DuellistsEdgeStart),
-    "Reaping Blow": (1,ReapingBlowStart),
     }
 
 EndOfCombatRules = {
     "Sire of the Blood Angels": (1,SireOfTheBloodAngelsEnd),
     "Duellist's Edge": (1,DuellistsEdgeEnd),
-    "Reaping Blow": (1,ReapingBlowEnd),
     }
 
 ChargeEndRules = {

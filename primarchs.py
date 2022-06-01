@@ -80,12 +80,13 @@ class Primarch:
         return
 
 class Lion(Primarch):
-    def __init__(self, weapon="Wolf Blade"):
-        super().__init__("Lion El'Jonson", 8,5,7,6,6,7,5,10,2,4,4,
+    def __init__(self, weapon="Lion Sword"):
+        super().__init__("Lion El'Jonson", 8,6,7,6,6,7,7,10,2,4,4,
             [FusilActinaeus()],
             [],
-            [   "Stasis Grenades",
-                "Leonine Panoply","An Absolute Focus"
+            [   "Legiones Astartes (Dark Angels)", #will always be Deathwing, can't see anything more impactful in duels
+                #"Stasis Grenades", //All primarchs are no longer affected by negative modifiers
+                "Leonine Panoply",
             ]
         )
         if weapon == "Wolf Blade":
@@ -433,8 +434,8 @@ def createPrimarchFromName(name):
         return Corax()
     elif name == "Alpharius":
         return Alpharius()
-    elif name == "Lion_Sword":
-        return Lion("Lion Sword")
+    elif name == "Lion_Blade":
+        return Lion("Wolf Blade")
     elif name == "Fulgrim_Laer":
         return Fulgrim("Blade of the Laer")
     elif name == "Perturabo_Fists":
@@ -454,5 +455,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  #"Lion_Sword", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  #"Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

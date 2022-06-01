@@ -44,17 +44,17 @@ class LionSword(MeleeWeapon):
             "Lion Sword",
             lambda s: s,
             1,
-            ["Master-Crafted","Fleshbane"] #Lance
-            )
+            ["Master-Crafted","Fleshbane", "Instant Death"]
+        )
 
 class WolfBlade(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Wolf Blade",
-                    lambda s: s+3,
-                    2,
-                    ["Shred"], #Fearsome Ruin
-                    )
+            "Wolf Blade",
+            lambda s: s+2,
+            3,
+            ["Shred", "Breaching(4)", "Reaping Blow(2)", "Master-Crafted"],
+        )
 
 class Fireblade(MeleeWeapon):
     def __init__(self):
@@ -320,11 +320,11 @@ class FusilActinaeus(ShootingWeapon):
         super().__init__(
             "Fusil Actinaeus",
             lambda s: 7,
-            2,
+            3,
             18,
-            "Salvo",
-            "4", #ignore the 2/4 for now, we have no movement anyway
-            ["Twin-linked", "Blind", "Plasma"]
+            "Assault",
+            "2",
+            ["Twin-linked", "Blind", "Plasma", "Rending(3)"]
         )
 
 #we assume we'll never throw frag (S3 AP-) and plasma (S4 AP4)
