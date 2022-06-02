@@ -197,31 +197,32 @@ class Curze(Primarch):
         super().__init__("Konrad Curze",8,7,6,6,6,7,8,10,2,4,4, #+1A for claws
             [Widowmakers()],
           [MercyAndForgiveness()],
-          [
+            [
             "Hit and Run",
             "Glimpse of Death", #TODO, no idea how Perils work yet
-          ]
+            ]
         )
         #self.how = True #?
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
-        super().__init__("Sanguinius",9,5,6,6,6,7,6,10,2,4,4,
+        super().__init__("Sanguinius",8,6,6,6,6,6,6,10,2,4,4,
             [Infernus(),
              #FragGrenade() #Ignore until Blast is implemented, but Sang of all Primarchs may actually throw Frag. Not really. If Sang gets a shooting it's Infernus and then there's no shooting phase left (Frags can't Overwatch)
              ],
-              [],
-              [
-                  "Sire of the Blood Angels",
-                  "Great Wings", #"Sky Strike",
-                  "Regalia Resplendent",
-              ]
+            [],
+            [
+                "Sire of the Blood Angels",
+                "Encarmine Fury",
+                "Regalia Resplendent",
+            ]
         )
-        self.how = True
+        #self.how = True #?
         if weapon == "Encarmine":
             self.melee_weapons.append(BladeEncarmine())
         else:
-            self.melee_weapons.append(SpearOfTelesto()) #NEVER throw the Spear and use the AP3 Moonsilver blade...
+            self.melee_weapons.append(SpearOfTelesto())
+            self.melee_weapons.append(MoonsilverBlade())
 
 class Ferrus(Primarch):
     def __init__(self, weapon="Forgebreaker"):
@@ -444,5 +445,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  #"Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
                   ]

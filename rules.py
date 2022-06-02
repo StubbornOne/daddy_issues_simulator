@@ -58,13 +58,12 @@ def SireOfTheRavenGuard(primarch, defender, combat_round):
         primarch.I = min(10, primarch.I + 1)
         print("Sire of the Raven Guard: %s gains +1S +1I!" % primarch.name)
 
-#####START OF COMBAT
+def SireOfTheBloodAngels(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.WS = min(10, primarch.WS + 1)
+        print("Sire of the Blood Angels: %s gains +1WS!" % primarch.name)
 
-def SireOfTheBloodAngelsStart(primarch, defender, combat_round):
-    if combat_round == 0:
-        primarch.A += 1
-        primarch.I = min(10, primarch.I + 1)
-        print("Sire of the Blood Angels: %s gains +1A +1I!" % primarch.name)
+#####START OF COMBAT
 
 def PreternaturalStrategyIncrement(primarch, defender, combat_round):
     if primarch.shadow_WS == 10:
@@ -177,7 +176,12 @@ def FightingStyleShadowWalk(attacker, defender, threshold):
 
 ####################PREWOUND####################
 
-def Fleshbane(defender, threshold):
+def EncarmineFury(attacker, defender, threshold):
+    if attacker.charge:
+        return max(2, threshold-1)
+    return threshold
+
+def Fleshbane(attacker, defender, threshold):
     if "Preternatural Resilience" in defender.rules:
         #So this is the funny part; unlike immunity, Preternatural Resilience is written to hijack flat rolls, as with the DG's intent to spam rad and phosphex
         #However, unlike Poison, Fleshbane has no "use strength's higher threshold"
@@ -196,6 +200,11 @@ def Fleshbane(defender, threshold):
         return threshold
     print("Fleshbane sets threshold to 2+")
     return 2
+
+#needs this to ensure any normal roll is also blocked
+def AuricArmour(attacker, defender, threshold):
+    print("Auric Armour limits wound threshold to 4+")
+    return max(threshold, 4)
 
 def ChildOfTerra(attacker, attacker_weapon, defender, combat_round, woundRoll):
     if not woundRoll.rerolled and woundRoll.value == 1:
@@ -219,11 +228,6 @@ def DarkFortuneWound(attacker, attacker_weapon, defender, combat_round, woundRol
             old_value = woundRoll.value
             rerollDie(woundRoll)
             print("Dark Fortune: %d -> %d" % (old_value, woundRoll.value))
-
-#needs this to ensure any normal roll is also blocked
-def AuricArmour(defender, threshold):
-    print("Auric Armour limits wound threshold to 4+")
-    return max(threshold, 4)
 
 #POSTWOUND
 def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
@@ -251,18 +255,6 @@ def InstantDeath(attacker, attacker_weapon, defender, woundRolls):
     #print("Instant Death: All wounds have Instant Death")
     for woundRoll in woundRolls:
         woundRoll.effects.append("Instant Death")
-
-def WrathOfAngels(attacker, attacker_weapon, defender, woundRolls):
-    new_woundRolls = []
-    for woundRoll in woundRolls:
-        if woundRoll.value == 6 and woundRoll.success == True:
-            print("Wrath of Angels: %d results in two wounds!" % woundRoll.value)
-            new_woundRoll = WoundDie(6,attacker_weapon.AP)
-            new_woundRoll.success = True
-            new_woundRoll.evaluated = True
-            #clone the effects over?
-            new_woundRolls.append(new_woundRoll)
-    woundRolls.extend(new_woundRolls)
 
 def Rending(num):
     def func(attacker, attacker_weapon, defender, woundRolls):
@@ -363,6 +355,25 @@ def Concussive(attacker, attacker_weapon, defender, woundRolls, saveRolls):
             print("Concussive: %s is concussed!" % defender.name)
             break #just one is enough
 
+def Moonsilver(attacker, attacker_weapon, defender, woundRolls, saveRolls):
+    #check for 'Psyker' done in combat.py
+    new_woundRolls = []
+    new_saveRolls = []
+    for i in range(len(saveRolls)):
+        if not saveRolls[i].success:
+            print("Moonsilver: Unsaved roll results in two wounds!")
+            new_woundRoll = WoundDie(woundRolls[i].value,attacker_weapon.AP)
+            new_woundRoll.success = True
+            new_woundRoll.evaluated = True
+            #clone the effects over?
+            new_woundRolls.append(new_woundRoll)
+            new_saveRoll = SaveDie(saveRolls[i].value,saveRolls[i].saveType)
+            new_saveRoll.success = False
+            new_saveRoll.evaluated = True
+            new_saveRolls.append(new_saveRoll)
+    woundRolls.extend(new_woundRolls)
+    saveRolls.extend(new_saveRolls)
+
 def SoulBlaze(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     for i in range(len(saveRolls)):
         if not saveRolls[i].success:
@@ -396,12 +407,6 @@ def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
             print("Disabling Strike: %s now at WS%d S%d" % (defender.name, defender.WS, defender.S))
 
 #######END OF COMBAT
-def SireOfTheBloodAngelsEnd(primarch, opponent, combat_round):
-    if combat_round == 0:
-        primarch.I = max(1,primarch.I - 1)
-        primarch.A -= 1
-        #print("Sire of the Blood Angels: %s's I and A reset to %d, %d" % (primarch.name, primarch.I, primarch.A))
-
 def DuellistsEdgeEnd(num):
     def func(primarch, opponent, combat_round):
         if not (primarch.underConcuss > 0):
@@ -429,6 +434,10 @@ def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
         primarch.S = max(0, primarch.S - 1)
         primarch.I = max(1,primarch.I - 1)
         #print("Sire of the Raven Guard: %s loses the +1S +1I" % primarch.name)
+
+def SireOfTheBloodAngelsEnd(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.WS = max(0, primarch.WS - 1)
 
 ###END OF ASSAULT
 def WildfirePanoplyEnd(primarch, combat_round):
@@ -574,6 +583,7 @@ MeleePreWoundDieDefenderRules = {
 }
 
 MeleePreWoundThresholdAttackerRules = {
+    "Encarmine Fury": (1, EncarmineFury),
     "Fleshbane": (1, Fleshbane),
     }
 
@@ -587,7 +597,6 @@ MeleePostWoundAttackerRules = {
     "Murderous Strike(4)": (1, MurderousStrike(4)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Wrath of Angels": (2, WrathOfAngels), #hack to ensure the new rolls have Instant Death
     "Rending(3)": (1, Rending(3)), #.______.
     "Rending(4)": (1, Rending(4)), #.______.
     "Rending(5)": (1, Rending(5)), #.______.
@@ -632,6 +641,7 @@ MeleePostSaveAttackerRules = {
     #"Strikedown": (1, Strikedown),
     "Concussive": (1, Concussive),
     "Disabling Strike": (1, DisablingStrike),
+    "Moonsilver": (3, Moonsilver),
     }
 
 MeleePostSaveDefenderRules = {
@@ -675,19 +685,18 @@ ChargeRules = {
     "Furious Charge(1)": (1, FuriousCharge(1)), #.___.
     "Furious Charge(2)": (1, FuriousCharge(2)), #.___.
     "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
+    "Sire of the Blood Angels": (1, SireOfTheBloodAngels),
     "Counter-Attack(1)": (1,CounterAttack(1)),
     "Counter-Attack(2)": (1,CounterAttack(2)),
     }
 
 StartOfCombatRules = {
-    "Sire of the Blood Angels": (1,SireOfTheBloodAngelsStart),
     "Preternatural Strategy": (1, PreternaturalStrategyIncrement),
     "Fighting Style": (1, FightingStyle),
     "Duellist's Edge(1)": (1,DuellistsEdgeStart(1)),
     }
 
 EndOfCombatRules = {
-    "Sire of the Blood Angels": (1,SireOfTheBloodAngelsEnd),
     "Duellist's Edge(1)": (1,DuellistsEdgeEnd(1)),
     }
 
@@ -695,6 +704,7 @@ ChargeEndRules = {
     "Furious Charge(1)": (1, FuriousChargeEnd(1)),
     "Furious Charge(2)": (1, FuriousChargeEnd(2)),
     "Sire of the Raven Guard": (1, SireOfTheRavenGuardEnd),
+    "Sire of the Blood Angels": (1, SireOfTheBloodAngelsEnd),
     "Counter-Attack(1)": (1,CounterAttackEnd(1)),
     "Counter-Attack(2)": (1,CounterAttackEnd(2)),
     }

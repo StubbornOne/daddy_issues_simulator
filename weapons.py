@@ -143,16 +143,25 @@ class BladeEncarmine(MeleeWeapon):
     "Blade Encarmine",
     lambda s: s+1,
     2,
-    ["Shred"] #Rampage
+    ["Master-Crafted", "Shred", "Rage(2)", "Murderous Strike(5)"] #No idea what Rage(2) is...
     )
 
 class SpearOfTelesto(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "Spear of Telesto",
+    lambda s: 10,
+    1,
+    ["Master-Crafted"]
+    )
+
+class MoonsilverBlade(MeleeWeapon):
+    def __init__(self):
+        super().__init__(
+    "Moonsilver Blade",
     lambda s: s,
     2,
-    ["Instant Death", "Master-Crafted", "Wrath of Angels", "PLUS_THREE_S_ON_CHARGE"]
+    ["Master-Crafted", "Moonsilver"]
     )
 
 class Forgebreaker_Ferrus(MeleeWeapon):
@@ -471,7 +480,7 @@ class Infernus(ShootingWeapon):
             18,
             "Assault",
             "2",
-            ["One-Use"],
+            ["One-Use", "Melta"],
             )
 
 class PlasmaBlaster(ShootingWeapon):

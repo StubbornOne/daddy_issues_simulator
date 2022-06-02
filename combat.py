@@ -5,37 +5,6 @@ from calculations import *
 
 ####AI stuff
 
-def SangCharged(defender):
-    return defender.name == "Sanguinius" and defender.charge
-
-"""
-VERY rough metrics based on 1d4's math, which I do not know the exact algorithm
-One attack from Sword of Balenight (assume WS9; for 3+ just 4/3 the final result)
-1 * 1/2 * 3/4 / 2 = 0.1875
-1 * 1/2 * 5/9 / 3 = 0.138
-1 * 1/2 * 3/4 / 3 = 0.125
-1 * 1/2 * 5/9 / 3 = 0.0926
-
-Against T6 Sever Life will cause an additional 1.091 Wounds on average. (~0.5 after saves, ~-0.1 if I alloc 5 attacks)
-Against T7 Sever Life will cause an additional 0.909 Wounds on average. (~0.45 after saves, ~-0.05 if I alloc 5 attacks)
-Assume this is for 4++; if so, using very rough math for 3++ (*2 / 3):
-Against T6 Sever Life will cause an additional 0.727 Wounds on average. (~0.242 after saves, ~0.04 if I alloc 5 attacks)
-Against T7 Sever Life will cause an additional 0.606 Wounds on average. (~0.202 after saves, ~0.034 if I alloc 5 attacks)
-
-One attack from Axe of Helwinter (assume WS9)
-1.5 * 1/2 * 5/6 / 2 = 0.3125
-1.5 * 1/2 * 2/3 / 2 = 0.25
-1.5 * 1/2 * 5/6 / 3 = 0.208
-1.5 * 1/2 * 2/3 / 3 = 0.167
-
-More precisely calculations needed, but from the gist of it; T7/3++-equiv spend all on Axe; everyone else 5-1 split
-Ok I crunched it against Ferrus; indeed, spend all on Axe if T7 and 3++
-"""
-def predictSeverLife(attacker, defender):
-    if ((attacker.S >= defender.T) and defender.invuln_melee > 3) and not SangCharged(defender):
-        return True
-    return False
-
 def needToConcuss(defender):
     return defender.name == "Fulgrim" or ("Hit and Run" in defender.rules and not defender.active)
 
@@ -150,14 +119,14 @@ def resolveWounds(attacker, attacker_weapon, defender, combat_round, hitRolls, a
         if "Sire of the Iron Hands" in defender.rules and attacker != defender: #Gets Hot lul
             atkS = max(1, atkS - 1) #to avoid accessing chart[-1]
             print("Sire of the Iron Hands: Shooting attacks have -1S against %s! S:%d" % (defender.name, atkS))
-        if "Draken Scale" in defender.rules and ("Plasma" in attacker_weapon.rules or "Flame" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules):
+        if "Draken Scale" in defender.rules and ("Plasma" in attacker_weapon.rules or "Flame" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules or "Melta" in attacker_weapon.rules):
             atkS = max(1, atkS // 2) #rounded down!
-            print("Draken Scale: Plasma and Flamers are reduce to half strength! S:%d" % atkS)
+            print("Draken Scale: Reduced to half strength! S:%d" % atkS)
     threshold = thresholdToWound(atkS, defT)
     #apply threshold stuff, if any
     rules = collectRules(attacker, attacker_weapon, defender, combat_round, "%sPreWoundThreshold" % attackType)
     for rule in rules:
-        threshold = rule[1](defender, threshold)
+        threshold = rule[1](attacker, defender, threshold)
 
     print("%d+ to wound..." % threshold)
     
@@ -416,6 +385,10 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             else:
                 #use the Axe
+                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
+        elif attacker.name == "Sanguinius": #Spear config
+            if defender.name == "Konrad Curze" or defender.name == "Magnus the Red":
+                #use Moonsilver
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
             if defender.T >=7 or needToConcuss(defender) or (defender.I > attacker.I and defender.name != "Angron") or defender.name == "Horus":
