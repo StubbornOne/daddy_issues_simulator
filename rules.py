@@ -38,6 +38,11 @@ def ChargeBonus(primarch, defender, combat_round):
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
+def LA_WE(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.A += 1
+        print("Legiones Astartes (World Eaters): %s gets +1A for the charge!" % primarch.name)
+
 def CounterAttack(num):
     def func(primarch, defender, combat_round):
         if defender.charge:
@@ -418,6 +423,10 @@ def ChargeBonusEnd(primarch, defender, combat_round):
     if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
         primarch.A -= 1
 
+def LA_WEEnd(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.A -= 1
+
 def CounterAttackEnd(num):
     def func(primarch, opponent, combat_round):
         if opponent.charge:
@@ -682,6 +691,7 @@ StartOfAssaultRules = {
     }
 
 ChargeRules = {
+    "Legiones Astartes (World Eaters)": (1, LA_WE),
     "Furious Charge(1)": (1, FuriousCharge(1)), #.___.
     "Furious Charge(2)": (1, FuriousCharge(2)), #.___.
     "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
@@ -701,6 +711,7 @@ EndOfCombatRules = {
     }
 
 ChargeEndRules = {
+    "Legiones Astartes (World Eaters)": (1, LA_WEEnd),
     "Furious Charge(1)": (1, FuriousChargeEnd(1)),
     "Furious Charge(2)": (1, FuriousChargeEnd(2)),
     "Sire of the Raven Guard": (1, SireOfTheRavenGuardEnd),

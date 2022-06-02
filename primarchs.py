@@ -242,15 +242,20 @@ class Ferrus(Primarch):
 
 class Angron(Primarch):
     def __init__(self):
-        super().__init__("Angron",9,5,7,6,5,7,6,10,3,4,4,
+        super().__init__("Angron",8,5,6,6,6,6,6,10,2,4,4, #+1 for Gores but -1 to compensate for the 'turn-0' Butcher's Nails increment
             [SpiteFurnace()],
-          [GorefatherAndGorechild()],
-          [
-              "Hatred", "Feel No Pain",
-              #"Butcher's Nails",
-              "Furious Charge"
-          ]
+            [GorefatherAndGorechild()],
+            [
+                "Legiones Astartes (World Eaters)",
+                "Hatred", "Feel No Pain(6)",
+                "Furious Charge(2)"
+            ]
         )
+    
+    def handleStartOfTurn(self):
+        super().handleStartOfTurn()
+        self.A = min(10, self.A+1)
+        print("Butcher's Nails: Angron has %d attacks!" % self.A)
 
 class Guilliman(Primarch):
     def __init__(self):

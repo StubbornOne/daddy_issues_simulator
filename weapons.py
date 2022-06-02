@@ -125,7 +125,7 @@ class StormsTeeth(MeleeWeapon):
     "Storm's Teeth",
     lambda s: s+2,
     2,
-    ["Shred", "Murderous Strike(6)"]
+    ["Shred", "Murderous Strike(6)", "Chain"]
     )
 
 class MercyAndForgiveness(MeleeWeapon):
@@ -173,15 +173,6 @@ class Forgebreaker_Ferrus(MeleeWeapon):
         ["Master-Crafted", "Brutal(3)"]
     )
 
-class Fists_Ferrus(MeleeWeapon):
-    def __init__(self):
-        super().__init__(
-    "Bare Hands",
-                    lambda s: s,
-                    2,
-                    ["Smash"]
-                    )
-
 class ServoArm(MeleeWeapon):
     def __init__(self):
         super().__init__(
@@ -197,7 +188,7 @@ class GorefatherAndGorechild(MeleeWeapon):
     "Gorefather & Gorechild",
     lambda s: s + 1,
     2,
-    ["Murderous Strike"] #"Armourbane"
+    ["Shred", "Murderous Strike(3)", "Chain"]
     )
 
 class GladiusIncandor(MeleeWeapon):
@@ -540,7 +531,7 @@ class SpiteFurnace(ShootingWeapon):
             2,
             12,
             "Pistol",
-            "1",
+            "2",
             ["Master-Crafted", "Gets Hot", "Plasma"]
             )
 

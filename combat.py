@@ -49,7 +49,10 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
         return hitRolls
     #calculate the thresholds, apply all rules
     if attackType == "Melee":
-        threshold = thresholdToHit(attacker.WS, defender.WS)
+        if defender.name == "Angron": #TODO: See https://www.reddit.com/r/Warhammer30k/comments/v2jakj/has_anyone_crunched_the_numbers_on_primarch_duels/, debate(?) on Butcher's Nails' effect on Challenges
+            threshold = thresholdToHit(attacker.WS, 3)
+        else:
+            threshold = thresholdToHit(attacker.WS, defender.WS)
     else:
         #2.0: All Primarch Snap Shots resolved at full BS
         threshold = thresholdToShoot(attacker.BS)
