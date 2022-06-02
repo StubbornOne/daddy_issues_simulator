@@ -181,13 +181,14 @@ class Russ(Primarch):
 
 class Dorn(Primarch):
     def __init__(self):
-        super().__init__("Rogal Dorn",8,5,6,6,6,5,4,10,2,4,4,
+        super().__init__("Rogal Dorn",8,6,6,6,7,6,6,10,2,4,4,
             [VoiceOfTerra()],
           [StormsTeeth()],
           [
+            "Legiones Astartes (Imperial Fists)",
             "Auric Armour",
-            "Furious Charge"
-            #"Sundering Blow", #unlikely to implement; mathhammer says Sundering is always strictly worse in daddy duels
+            "Furious Charge(2)",
+            "Bulwark of the Imperium",
           ]
         )
 

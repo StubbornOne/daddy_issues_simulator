@@ -34,7 +34,7 @@ def WildfirePanoplyStart(primarch, combat_round):
 #####START OF COMBAT: CHARGE
 
 def ChargeBonus(primarch, defender, combat_round):
-    if primarch.charge and "Shroud Bombs" not in defender.rules:
+    if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
@@ -47,7 +47,7 @@ def CounterAttack(num):
 
 def FuriousCharge(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge:
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
             primarch.S = primarch.S + num
             print("Furious Charge: %s gains +%dS!" % (primarch.name, num))
     return func
@@ -161,6 +161,10 @@ def ArmourOfElavagar(attacker, defender, threshold):
         print("Armour of Elavagar applies -1 to hit: new threshold %d" % threshold)
     return threshold
 
+def LA_IF(attacker, defender, threshold):
+    print("Legiones Astartes (Imperial Fists): Add +1 to hit with Bolt weapons")
+    return threshold - 1
+
 def PhantasmalAura(attacker, defender, threshold):
     print("Phantasmal Aura applies -1 to hit: new threshold %d" % (threshold+1))
     return threshold + 1
@@ -218,8 +222,8 @@ def DarkFortuneWound(attacker, attacker_weapon, defender, combat_round, woundRol
 
 #needs this to ensure any normal roll is also blocked
 def AuricArmour(defender, threshold):
-    print("Auric Armour limits wound threshold to 3+")
-    return max(threshold, 3) #so 2+ to wound gets rejected
+    print("Auric Armour limits wound threshold to 4+")
+    return max(threshold, 4)
 
 #POSTWOUND
 def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
@@ -410,8 +414,8 @@ def DuellistsEdgeEnd(num):
             primarch.I = max(1,primarch.I - num)
     return func
 
-def ChargeBonusEnd(primarch, opponent, combat_round):
-    if primarch.charge and "Shroud Bombs" not in opponent.rules:
+def ChargeBonusEnd(primarch, defender, combat_round):
+    if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
         primarch.A -= 1
 
 def CounterAttackEnd(num):
@@ -421,8 +425,8 @@ def CounterAttackEnd(num):
     return func
 
 def FuriousChargeEnd(num):
-    def func(primarch, opponent, combat_round):
-        if primarch.charge:
+    def func(primarch, defender, combat_round):
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
             primarch.S = max(0, primarch.S - num)
     return func
 
@@ -442,6 +446,7 @@ def WildfirePanoplyEnd(primarch, combat_round):
 ###############SHOOTING###############
 #modifiers, flat-threshold
 ShootingPreHitThresholdAttackerRules = {
+    "Legiones Astartes (Imperial Fists)": (1, LA_IF),
     }
 
 ShootingPreHitThresholdDefenderRules = {
@@ -584,6 +589,7 @@ MeleePreWoundThresholdDefenderRules = {
     }
 
 MeleePostWoundAttackerRules = {
+    "Murderous Strike(6)": (1, MurderousStrike(6)), #._____.
     "Murderous Strike(5)": (1, MurderousStrike(5)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),

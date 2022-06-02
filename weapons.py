@@ -123,9 +123,9 @@ class StormsTeeth(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "Storm's Teeth",
-    lambda s: s,
+    lambda s: s+2,
     2,
-    ["Reaping Blow", "Shred"] #"Rampage"
+    ["Shred", "Murderous Strike(6)"]
     )
 
 class MercyAndForgiveness(MeleeWeapon):
@@ -443,11 +443,11 @@ class VoiceOfTerra(ShootingWeapon):
         super().__init__(
             "Voice of Terra",
             lambda s: 5,
-            4,
+            3,
             24,
-            "Salvo",
-            "5", #ignore the 3 for now, under assumption charge over shooting
-            ["Rending"],
+            "Assault",
+            "3",
+            ["Rending(5)"],
             )
 
 class Widowmakers(ShootingWeapon):
