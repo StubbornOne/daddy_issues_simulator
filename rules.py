@@ -261,10 +261,14 @@ def InstantDeath(attacker, attacker_weapon, defender, woundRolls):
 def Rending(num):
     def func(attacker, attacker_weapon, defender, woundRolls):
         for woundRoll in woundRolls:
-            if woundRoll.value >= num:
+            threshold = num
+            if "Preternatural Resilience" in defender.rules:
+                threshold = 6
+            if woundRoll.value >= threshold:
                 woundRoll.success = True
                 woundRoll.AP = min(woundRoll.AP, 2)
                 print("Rending: %s and above -> auto-Wound at AP2" % num)
+                #Suspicion: this isn't working as intended
     return func
 
 def Breaching(num):
@@ -806,14 +810,19 @@ def SerpentScalesSave():
     print("Serpent's Scales: %d" % (save))
     return save >= 3
 
-def IWNDTest(primarch1):
+def IWNDTest(primarch):
     IWND_roll = roll()
-    print("%s rolls It Will Not Die: %d" % (primarch1.name, IWND_roll))
-    if IWND_roll < 5:
+    threshold = 5
+    if primarch.name == "Mortarion" or primarch.name == "Vulkan":
+        threshold = 4
+    print("%s rolls It Will Not Die: %d" % (primarch.name, IWND_roll))
+    """
+    if IWND_roll < threshold:
         if primarch1.rerollIWND:
             new_roll = roll()
             print("Reroll: %s -> %s" % (IWND_roll, new_roll))
             IWND_roll = new_roll
-    if IWND_roll >= 5:
-        primarch1.W = min(primarch1.W + 1, primarch1.shadow_W)
-        print("%s regains a wound to %d!" % (primarch1.name, primarch1.W))
+    """
+    if IWND_roll >= threshold:
+        primarch.W = min(primarch.W + 1, primarch.shadow_W)
+        print("%s regains a wound to %d!" % (primarch.name, primarch.W))

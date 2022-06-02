@@ -215,7 +215,7 @@ class Silence(MeleeWeapon):
     "Silence",
     lambda s: s+1,
     2,
-    ["Instant Death", "Reaping Blow"]
+    ["Instant Death"]
     )
 
 class AhnNunurta(MeleeWeapon):
@@ -556,7 +556,7 @@ class Lantern(ShootingWeapon):
             18,
             "Assault",
             "1",
-            [] #Sunder
+            []
             )
 
 class PhosphexBomb(ShootingWeapon):

@@ -304,15 +304,15 @@ class Guilliman(Primarch):
 
 class Mortarion(Primarch):
     def __init__(self):
-        super().__init__("Mortarion",7,5,6,7,7,5,5,10,2,4,4,
-            [Lantern(), PhosphexBomb()],
-          [Silence()],
-          [
-              #"AUTOPASS_TOUGHNESS", "AUTOPASS_DANGEROUS_TERRAIN",
-              "Preternatural Resilience"
-          ]
+        super().__init__("Mortarion",7,6,7,7,7,5,6,10,2,4,4,
+            [Lantern()], #Seven phosphex bombs...
+            [Silence()],
+            [
+                "Preternatural Resilience",
+                "Hatred(Psykers)"
+            ]
         )
-        self.rerollIWND = True
+        #self.rerollIWND = True
 
 class Magnus(Primarch):
     def __init__(self):
