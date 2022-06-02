@@ -457,7 +457,7 @@ def CounterAttackEnd(primarch, opponent, combat_round):
         primarch.A -= 1
 
 def FuriousChargeEnd(primarch, opponent, combat_round):
-    if primarch.charge:
+    if primarch.charge and "Shroud Bombs" not in opponent.rules:
         primarch.S = max(0, primarch.S - 1)
         #print("Furious Charge: %s loses the +1S" % primarch.name)
 

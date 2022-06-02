@@ -447,7 +447,7 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 #use the Axe
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
-            if defender.T >=7 or needToConcuss(defender) or (defender.I > attacker.I and defender.name != "Angron") or defender.name == "Horus":
+            if defender.T >=7 or needToConcuss(defender) or (defender.I > attacker.I and defender.name != "Angron") or defender.name == "Horus Lupercal":
                 #use the HoD. T7+ => HoD higher toWound, Angron -> use blade for chance of Murderous Strike, Horus -> Hand is always S10, higher I -> attempt to concuss and then switch to blade
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
             else:
