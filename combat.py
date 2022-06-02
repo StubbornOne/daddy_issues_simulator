@@ -566,25 +566,6 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
 
     return ended
 
-def SoulBlazeTest(primarch1, num_round):
-    if primarch1.sufferSoulBlaze:
-        soulblaze_test = roll(6)
-        if soulblaze_test <= 3:
-            print("Soul Blaze: %s rolls %d, ended!" % (primarch1.name, soulblaze_test))
-            primarch1.sufferSoulBlaze = False
-        else:
-            #D3 strength hits
-            attacker_weapon = SoulBlazeAttack()
-            hitRolls = rollDice(3)
-            print("Soul Blaze: %s rolls %d, failed! %d hits!" % (primarch1.name, soulblaze_test, len(hitRolls)))
-            for hitRoll in hitRolls:
-                hitRoll.value = 7
-                hitRoll.success = True
-                hitRoll.evaluated = True
-            woundRolls = resolveWounds(DummyPrimarch(), attacker_weapon, primarch1, num_round, hitRolls, "Shooting")
-            resolveSaves(DummyPrimarch(), attacker_weapon, primarch1, num_round, woundRolls, "Shooting")
-    return isDefeated(primarch1)
-
 def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
     primarch1.handleStartOfTurn()
     primarch2.handleStartOfTurn()
@@ -606,14 +587,6 @@ def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
     if ended:
         return ended
     print("###End of assault phase###")
-
-    #Soul Blaze
-    ended = SoulBlazeTest(primarch1, num_round)
-    if ended:
-        return ended
-    ended = SoulBlazeTest(primarch2, num_round)
-    if ended:
-        return ended
 
     #cleanup
     if primarch1.active:

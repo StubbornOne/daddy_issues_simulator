@@ -222,7 +222,7 @@ class AhnNunurta(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "Ahn-Nunurta",
-    lambda s: s+2,
+    lambda s: 6, #WHAT
     1,
     ["Force"]
     )
@@ -429,13 +429,12 @@ class PsyfireSerpenta(ShootingWeapon):
     def __init__(self):
         super().__init__(
             "Psyfire Serpenta",
-            lambda s: 8,
+            lambda s: 3, #WHAT
             2,
             15,
             "Assault",
-            #shit
-            "D3",
-            ["Soul Blaze", "Plasma"],
+            "3", #Hooray no more D3, TODO: change to numbers
+            ["Plasma"],
             )
 
 class VoiceOfTerra(ShootingWeapon):

@@ -166,10 +166,6 @@ def LA_IF(attacker, defender, threshold):
     print("Legiones Astartes (Imperial Fists): Add +1 to hit with Bolt weapons")
     return max(2, threshold - 1)
 
-def PhantasmalAura(attacker, defender, threshold):
-    print("Phantasmal Aura applies -1 to hit: new threshold %d" % (threshold+1))
-    return threshold + 1
-
 def FightingStyleShadowWalk(attacker, defender, threshold):
     print("Fighting-Style: Shadow-walk applies -1 to hit: new threshold %d" % (threshold+1))
     return threshold + 1
@@ -380,12 +376,6 @@ def Moonsilver(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     woundRolls.extend(new_woundRolls)
     saveRolls.extend(new_saveRolls)
 
-def SoulBlaze(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for i in range(len(saveRolls)):
-        if not saveRolls[i].success:
-            defender.sufferSoulBlaze = True
-            break #just one is enough
-
 def FeelNoPain(num):
     def func(attacker, attacker_weapon, defender, woundRolls, saveRolls):
         for i in range(len(saveRolls)):
@@ -464,7 +454,6 @@ ShootingPreHitThresholdAttackerRules = {
     }
 
 ShootingPreHitThresholdDefenderRules = {
-    "Phantasmal Aura": (1, PhantasmalAura),
     }
 
 ShootingPreHitDieAttackerRules = {
@@ -545,7 +534,6 @@ ShootingPreSaveDieDefenderRules = {
 
 ShootingPostSaveAttackerRules = {
     #"Deflagrate": (1, Deflagrate), #hardcoded test
-    "Soul Blaze": (1, SoulBlaze),
     }
 
 ShootingPostSaveDefenderRules = {
@@ -562,7 +550,6 @@ MeleePreHitThresholdAttackerRules = {
 
 MeleePreHitThresholdDefenderRules = {
     "Armour of Elavagar": (1, ArmourOfElavagar),
-    "Phantasmal Aura": (1, PhantasmalAura),
     "FIGHTING_STYLE_SHADOW_WALK": (1, FightingStyleShadowWalk),
     }
 

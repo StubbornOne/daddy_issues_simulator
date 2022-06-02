@@ -37,9 +37,6 @@ class Primarch:
         self.rules = rules  #misc combat-relevant rules
 
         #temporary values
-        self.sufferSeverLife = False
-        self.sufferSoulBlaze = False
-        #self.underStrikedown = False   ##HH rulebbook: Strikedown NO LONGER HALVES INITIATIVE
         #counter, substracts every End-Of-Assault-Phase (including the turn concussing turn)
         self.underConcuss = 0
         self.active = False #not your turn
@@ -316,14 +313,15 @@ class Mortarion(Primarch):
 
 class Magnus(Primarch):
     def __init__(self):
-        super().__init__("Magnus the Red",7,5,7,6,6,6,4,10,2,4,4,
+        super().__init__("Magnus the Red",7,6,6,6,6,6,6,10,2,4,4,
             [PsyfireSerpenta()],
           [AhnNunurta()],
           [
-              #"Eye of the Crimson King", "Infernal Bargain", "Mind Wrath", "Horned Raiment"
-              "Phantasmal Aura"
+              #LOL
+              #TODO: Cult Arcanas when psychic rules are known
           ]
         )
+        self.cover = 5
 
 class Horus(Primarch):
     def __init__(self):
