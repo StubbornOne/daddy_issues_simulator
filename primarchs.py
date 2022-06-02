@@ -156,7 +156,7 @@ class Khan(Primarch):
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Furious Charge(3)", #assume supposed to be cumulative with the Dao...
+                  "Furious Charge(1)",
                   "Wildfire Panoply",
                   "Hammer of Wrath(2)", #._________.
                   "Antigrav",
@@ -167,12 +167,13 @@ class Khan(Primarch):
 
 class Russ(Primarch):
     def __init__(self):
-        super().__init__("Leman Russ",9,6,6,6,6,7,6,10,2,4,4,
+        super().__init__("Leman Russ",8,6,7,6,6,7,8,10,2,4,4, #+1A for two weaps
             [Scornspitter()],
           [SwordOfBalenight(),AxeOfHelwinter()],
           [
+            "Furious Charge(1)", #It's technically Sire of the SW...
             "Armour of Elavagar",
-            "Counter-Attack"
+            "Counter-Attack(2)"
             #"Night Vision", "Preternatural Senses",
             #"Weapon Mastery"
           ]

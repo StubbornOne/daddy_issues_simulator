@@ -86,7 +86,7 @@ def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, a
         threshold = thresholdToShoot(attacker.BS)
     rules = collectRules(attacker, attacker_weapon, defender, combat_round, "%sPreHitThreshold" % (attackType))
     for rule in rules:
-        threshold = rule[1](threshold)
+        threshold = rule[1](attacker, defender, threshold)
     #apply threshold stuff, if any
 
     print("%d+ to hit..." % threshold)
@@ -325,7 +325,7 @@ def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap s
     elif attacker.name == "Corvus Corax" and len(attacker.shooting_weapons) > 1: #get the two Archaeotech pistols
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
-    elif attacker.name == "Jaghatai Khan" and len(attacker.shooting_weapons) > 1: #Mounted
+    elif attacker.name == "Jaghatai Khan" and len(attacker.shooting_weapons) > 1: #Mounted, assume this is what Firing Protocols do
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
         weapons.append(attacker.shooting_weapons[2])
@@ -368,17 +368,7 @@ def resolveMeleeAttacks(attacker, attacker_weapon, defender, combat_round, numAt
     resolveSaves(attacker, attacker_weapon, defender, combat_round, woundRolls, "Melee")
     
     #POST ATTACK PHASE
-    #Sever Life check
-    if defender.sufferSeverLife and defender.W > 0:
-        do_sever_life = roll() + roll()
-        print("Sever Life: %s rolls 2d6 against Toughness %d: %d" % (defender.name, defender.T, do_sever_life))
-        if do_sever_life > defender.T:
-            #create new wound rolls
-            newWoundRolls = rollWoundDice(roll(3), attacker_weapon)
-            print("Inflict %d new wounds" % len(newWoundRolls))
-            #we assume that because the AP of the wound is described, it means a save can be made for the new wounds
-            resolveSaves(attacker, attacker_weapon, defender, combat_round, newWoundRolls, "Melee")
-    defender.sufferSeverLife = False
+    return
 
 def resolveHammerOfWrath(attacker, defender, combat_round):
     #generate "hit" rolls, retrieve the dummy weapon
@@ -421,9 +411,9 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
         elif attacker.name == "Leman Russ":
-            if predictSeverLife(attacker, defender):
-                attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
-                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
+            #Can Russ still split his attacks...?
+            if defender.T <= 6 or defender.name == "Rogal Dorn": #TODO: Proper calculation esp. concerning Brutal
+                attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             else:
                 #use the Axe
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])

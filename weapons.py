@@ -98,16 +98,16 @@ class WhiteTigerDao(MeleeWeapon):
     "White Tiger Dao",
     lambda s: s+1,
     2,
-    ["Master-Crafted", "Duellist's Edge(1)", "Murderous Strike(5)"] #Furious Charge(2) absorbed into Khan's profile
+    ["Master-Crafted", "Duellist's Edge(1)", "Murderous Strike(5)", "Furious Charge(2)"] #assume this only applies to the Dao's attacks thus excluding HoW. TODO: Fix it, still affects HoW
     )
 
 class SwordOfBalenight(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "Sword of Balenight",
-    lambda s: s,
+    lambda s: s + 1,
     2,
-    ["Shred", "Sever Life"]
+    ["Master-Crafted", "Shred", "Murderous Strike(4)", "Brutal(2)"]
     )
 
 class AxeOfHelwinter(MeleeWeapon):
@@ -422,7 +422,7 @@ class Scornspitter(ShootingWeapon):
             12,
             "Assault",
             "3",
-            ["Rending"]
+            ["Rending(6)"]
             )
 
 class PsyfireSerpenta(ShootingWeapon):

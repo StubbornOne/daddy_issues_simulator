@@ -38,10 +38,12 @@ def ChargeBonus(primarch, defender, combat_round):
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
-def CounterAttack(primarch, defender, combat_round):
-    if defender.charge:
-        primarch.A += 1
-        print("Counter-Attack: %s gets +1A for being charged!" % primarch.name)
+def CounterAttack(num):
+    def func(primarch, defender, combat_round):
+        if defender.charge:
+            primarch.A += num
+            print("Counter-Attack: %s gets +%dA for being charged!" % (primarch.name, num))
+    return func
 
 def FuriousCharge(num):
     def func(primarch, defender, combat_round):
@@ -148,20 +150,22 @@ def DarkFortuneHit(attacker, attacker_weapon, defender, combat_round, hitRoll):
 
 #Threshold rules
 
-def LA_DA(threshold):
+def LA_DA(attacker, defender, threshold):
     #Always Deathwing
     print("Legiones Astartes (Dark Angels): Deathwing adds +1 to hit")
     return threshold - 1
 
-def ArmourOfElavagar(threshold):
-    print("Armour of Elavagar applies -1 to hit: new threshold %d" % (threshold+1))
-    return threshold + 1
+def ArmourOfElavagar(attacker, defender, threshold):
+    if defender.charge:
+        threshold = min(threshold+1,6)
+        print("Armour of Elavagar applies -1 to hit: new threshold %d" % threshold)
+    return threshold
 
-def PhantasmalAura(threshold):
+def PhantasmalAura(attacker, defender, threshold):
     print("Phantasmal Aura applies -1 to hit: new threshold %d" % (threshold+1))
     return threshold + 1
 
-def FightingStyleShadowWalk(threshold):
+def FightingStyleShadowWalk(attacker, defender, threshold):
     print("Fighting-Style: Shadow-walk applies -1 to hit: new threshold %d" % (threshold+1))
     return threshold + 1
 
@@ -367,15 +371,6 @@ def SoulBlaze(attacker, attacker_weapon, defender, woundRolls, saveRolls):
             defender.sufferSoulBlaze = True
             break #just one is enough
 
-def SeverLife(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for i in range(len(saveRolls)):
-        if not saveRolls[i].success:
-            #not actually necessary because the sever test is not recursive, but it avoids printing confusing messages
-            if not defender.sufferSeverLife:
-                print("Sever Life activated")
-                defender.sufferSeverLife = True
-            break #just one is enough
-
 def FeelNoPain(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     for i in range(len(saveRolls)):
         if not saveRolls[i].success:
@@ -419,9 +414,11 @@ def ChargeBonusEnd(primarch, opponent, combat_round):
     if primarch.charge and "Shroud Bombs" not in opponent.rules:
         primarch.A -= 1
 
-def CounterAttackEnd(primarch, opponent, combat_round):
-    if opponent.charge:
-        primarch.A -= 1
+def CounterAttackEnd(num):
+    def func(primarch, opponent, combat_round):
+        if opponent.charge:
+            primarch.A -= num
+    return func
 
 def FuriousChargeEnd(num):
     def func(primarch, opponent, combat_round):
@@ -491,6 +488,7 @@ ShootingPostWoundAttackerRules = {
     "Rending(3)": (1, Rending(3)), #.______.
     "Rending(4)": (1, Rending(4)), #.______.
     "Rending(5)": (1, Rending(5)), #.______.
+    "Rending(6)": (1, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
@@ -593,6 +591,7 @@ MeleePostWoundAttackerRules = {
     "Rending(3)": (1, Rending(3)), #.______.
     "Rending(4)": (1, Rending(4)), #.______.
     "Rending(5)": (1, Rending(5)), #.______.
+    "Rending(6)": (1, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
@@ -632,7 +631,6 @@ MeleePreSaveDieDefenderRules = {
 MeleePostSaveAttackerRules = {
     #"Strikedown": (1, Strikedown),
     "Concussive": (1, Concussive),
-    "Sever Life": (1, SeverLife),
     "Disabling Strike": (1, DisablingStrike),
     }
 
@@ -674,9 +672,11 @@ StartOfAssaultRules = {
     }
 
 ChargeRules = {
-    "Furious Charge(3)": (1, FuriousCharge(3)), #.___.
+    "Furious Charge(1)": (1, FuriousCharge(1)), #.___.
+    "Furious Charge(2)": (1, FuriousCharge(2)), #.___.
     "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
-    "Counter-Attack": (1,CounterAttack),
+    "Counter-Attack(1)": (1,CounterAttack(1)),
+    "Counter-Attack(2)": (1,CounterAttack(2)),
     }
 
 StartOfCombatRules = {
@@ -692,9 +692,11 @@ EndOfCombatRules = {
     }
 
 ChargeEndRules = {
-    "Furious Charge(3)": (1, FuriousChargeEnd(3)),
+    "Furious Charge(1)": (1, FuriousChargeEnd(1)),
+    "Furious Charge(2)": (1, FuriousChargeEnd(2)),
     "Sire of the Raven Guard": (1, SireOfTheRavenGuardEnd),
-    "Counter-Attack": (1,CounterAttackEnd),
+    "Counter-Attack(1)": (1,CounterAttackEnd(1)),
+    "Counter-Attack(2)": (1,CounterAttackEnd(2)),
     }
 
 EndOfAssaultRules = {
