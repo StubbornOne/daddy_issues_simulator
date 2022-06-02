@@ -326,14 +326,9 @@ def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap s
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
     elif attacker.name == "Jaghatai Khan" and len(attacker.shooting_weapons) > 1: #Mounted
-        if defender.name == "Angron" or defender.name == "Ferrus Manus":
-            weapons.append(attacker.shooting_weapons[0]) #Angron has 3+ armour, Ferrus imposes -1S on top of T7 so 6+
-        else:
-            weapons.append(attacker.shooting_weapons[1]) #use the HB. -1strength overall but 4x shots
-    #may be too optimistic to say Pert can't scatter the bombardment (onto himself!)
-    #elif attacker.name == "Perturabo" and attacker.active:
-    #    weapons.append(attacker.shooting_weapons[0])
-    #    weapons.append(attacker.shooting_weapons[1]) #fire the bombardment
+        weapons.append(attacker.shooting_weapons[0])
+        weapons.append(attacker.shooting_weapons[1])
+        weapons.append(attacker.shooting_weapons[2])
     else:
         #just use the first one
         weapons.append(attacker.shooting_weapons[0])
@@ -390,15 +385,8 @@ def resolveHammerOfWrath(attacker, defender, combat_round):
     numHits = 1
     attacker_weapon = HammerOfWrath()
     for rule in attacker.rules:
-        if rule == "Sojutsu Voidbike" or rule == "Nightmare Mantle":
-            numHits = roll(3)
-            break
-        if rule == "Korvidine Pinions":
-            numHits = roll(3)
-            attacker_weapon = KorvidinePinions()
-            break
-        if rule == "Great Wings":
-            attacker_weapon = GreatWings()
+        if rule == "Hammer of Wrath(2)": #.____.
+            numHits = 2
             break
 
     print("Hammer of Wrath: %s attacks with %s %d times!" %(attacker.name, attacker_weapon.name, numHits))
@@ -454,17 +442,13 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
 
 def attackAtThisInitiative(primarch, init):
     #reaping blow and duellist's edge has been handled at start of round
-    if type(primarch) == Khan:
-        return init == 10
     if len(primarch.melee_weapons) == 1 and "Unwieldy" in primarch.melee_weapons[0].rules: #this will skip Horus' Worldbreaker at init 1, which is expected because Horus will have already allocated
         return init == 0
     return primarch.I - 1 == init
 
 def pushAttackIntoInitiativeQueue(initiative_queue,attack,primarch):
     weapon = attack[1]
-    if type(primarch) is Khan:
-        initiative_queue[10].append(attack) #Khan's special tier. May want to hardcode instead, in case a Khan vs Khan fight happens (then initiative matters)
-    elif "Unwieldy" in weapon.rules:
+    if "Unwieldy" in weapon.rules:
         initiative_queue[0].append(attack)
     else:
         initiative = primarch.I-1
@@ -504,7 +488,7 @@ def fightSubPhase(primarch1, primarch2, combat_round, MODE_CHARGE):
     initiative_queue = [[] for i in range(11)]
 
     #now traverse the initiative queue to resolve attacks
-    i = 10 #Khan's special priority
+    i = 10 #Now obsolete priority
     while i >= 0:
         if attackAtThisInitiative(primarch1, i) and not primarch1.allocated_attacks:
             numattacks1 = primarch1.getAttacks(primarch2, combat_round)

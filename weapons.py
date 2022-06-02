@@ -96,9 +96,9 @@ class WhiteTigerDao(MeleeWeapon):
     def __init__(self):
         super().__init__(
     "White Tiger Dao",
-    lambda s: s,
+    lambda s: s+1,
     2,
-    ["Master-Crafted", "Duellist's Edge", "PLUS_ONE_S_ON_CHARGE"]
+    ["Master-Crafted", "Duellist's Edge(1)", "Murderous Strike(5)"] #Furious Charge(2) absorbed into Khan's profile
     )
 
 class SwordOfBalenight(MeleeWeapon):
@@ -377,17 +377,17 @@ class LogosArray(ShootingWeapon):
             ["Twin-linked", "Shred", "Shell Shock(1)"]
         )
 
-class PrecisionBombardment(ShootingWeapon):
+class StormsVoice(ShootingWeapon):
     def __init__(self):
         super().__init__(
-            "Precision Bombardment",
-            lambda s: 9,
-            2,
-            255,
-            "Ordnance",
-            "D3",
-            ["Twin-linked", "One-Use", "NOT_COUNT_AS_SHOOTING", "Large Blast", "Barrage"]
-            )
+            "Storm's Voice",
+            lambda s: 6,
+            4,
+            12,
+            "Pistol",
+            "2",
+            ["Rending(5)", "Master-Crafted"]
+        )
 
 class ArchaeotechPistol(ShootingWeapon):
     def __init__(self):

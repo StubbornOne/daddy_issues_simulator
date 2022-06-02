@@ -131,6 +131,7 @@ class Perturabo(Primarch):
             [LogosArray()],
             [],
             [
+                "Firing Protocols(2)"
             ]
         )
         if weapon == "Forgebreaker":
@@ -141,30 +142,27 @@ class Perturabo(Primarch):
 class Khan(Primarch):
     def __init__(self, mode="Mounted"):
         if mode == "Afoot":
-            super().__init__("Jaghatai Khan",7,6,6,6,6,8,7,10,2,5,3, #+1A for pistol
-                [ArchaeotechPistol()],
+            super().__init__("Jaghatai Khan",7,6,6,6,6,8,7,10,2,4,3, #+1A for pistol
+                [StormsVoice()],
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  #"Sire of the White Scars", #hardcoded
+                  "Furious Charge(3)", #assume supposed to be cumulative with the Dao...
                   "Wildfire Panoply",
-                  #"AUTOPASS_DANGEROUS_TERRAIN",
               ])
         else:
-            super().__init__("Jaghatai Khan",7,6,6,7,6,7,7,10,2,5,3,
-                [ArchaeotechPistol(), SojutsuHeavyBolter(), SojutsuHeavyBolter()], #there are two heavy bolters, but rules are quite explicit 1-rider = 1-weapon, so no point adding the 2nd bolter
+            super().__init__("Jaghatai Khan",7,6,6,7,6,8,7,10,2,4,3, #+1A for pistol
+                [StormsVoice(), SojutsuHeavyBolter(), SojutsuHeavyBolter()],
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Sojutsu Voidbike", #"Hammer of Wrath",
-                  "Relentless",
-                  #"Sire of the White Scars",
+                  "Furious Charge(3)", #assume supposed to be cumulative with the Dao...
                   "Wildfire Panoply",
-                  #"AUTOPASS_DANGEROUS_TERRAIN",
+                  "Hammer of Wrath(2)", #._________.
+                  "Antigrav",
+                  "Firing Protocols(3)"
               ]
             )
-            #Unmatched Rider. Just jink for everything, it'll reset on your turn. It's possible the opponent will H&R and you'll get to Overwatch, but Overwatch was Snap Shot anyway
-            self.cover = 3
             self.how = True
 
 class Russ(Primarch):

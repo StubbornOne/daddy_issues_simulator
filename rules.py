@@ -43,10 +43,12 @@ def CounterAttack(primarch, defender, combat_round):
         primarch.A += 1
         print("Counter-Attack: %s gets +1A for being charged!" % primarch.name)
 
-def FuriousCharge(primarch, defender, combat_round):
-    if primarch.charge:
-        primarch.S = min(primarch.S + 1, 10)
-        print("Furious Charge: %s gains +1S!" % primarch.name)
+def FuriousCharge(num):
+    def func(primarch, defender, combat_round):
+        if primarch.charge:
+            primarch.S = primarch.S + num
+            print("Furious Charge: %s gains +%dS!" % (primarch.name, num))
+    return func
 
 def SireOfTheRavenGuard(primarch, defender, combat_round):
     if primarch.charge:
@@ -91,15 +93,11 @@ def FightingStyle(primarch, defender, combat_round):
 
 #technically it should be during attack selection?
 #also: does this actually modify the Init value? People assume so, but DEdge says "score" and RB says "fights at -1 Init", not change the value
-def DuellistsEdgeStart(primarch, defender, combat_round):
-    if not (primarch.underConcuss > 0): #we assume these take precedence
-        primarch.I = min(10, primarch.I + 1)
+def DuellistsEdgeStart(num):
+    def func(primarch, defender, combat_round):
+        primarch.I = min(10, primarch.I + num)
         print("Duellist's Edge: %s gains +1I!" % primarch.name)
-
-def ReapingBlowStart(primarch, defender, combat_round):
-    if not (primarch.underConcuss > 0): #we assume these take precedence
-        primarch.I = max(1, primarch.I - 1)
-        print("Reaping Blow: %s has -1I!" % primarch.name)
+    return func
 
 ########################PREHIT#############################
 
@@ -227,18 +225,13 @@ def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
             print("w%d: success" % woundRoll.value)
             woundRoll.success = True
 
-def MurderousStrike(attacker, attacker_weapon, defender, woundRolls):
-    for woundRoll in woundRolls:
-        if woundRoll.value == 6:
-            print("Murderous Strike: %d has Instant Death" % woundRoll.value)
-            woundRoll.effects.append("Instant Death")
-
-#kind of bad lol, use a HoF maybe
-def MurderousStrike5(attacker, attacker_weapon, defender, woundRolls):
-    for i in range(len(woundRolls)):
-        if woundRolls[i].value >= 5:
-            print("Murderous Strike (5+): %d has Instant Death" % woundRolls[i].value)
-            woundRolls[i].effects.append("Instant Death")
+def MurderousStrike(num):
+    def func(attacker, attacker_weapon, defender, woundRolls):
+        for woundRoll in woundRolls:
+            if woundRoll.value >= num:
+                print("Murderous Strike: %d has Instant Death" % woundRoll.value)
+                woundRoll.effects.append("Instant Death")
+    return func
 
 #If psychic is added, then force needs to check for toggle
 def Force(attacker, attacker_weapon, defender, woundRolls):
@@ -416,15 +409,11 @@ def SireOfTheBloodAngelsEnd(primarch, opponent, combat_round):
         primarch.A -= 1
         #print("Sire of the Blood Angels: %s's I and A reset to %d, %d" % (primarch.name, primarch.I, primarch.A))
 
-def DuellistsEdgeEnd(primarch, opponent, combat_round):
-    if not (primarch.underConcuss > 0):
-        primarch.I = max(1,primarch.I - 1)
-        #print("Duellist's Edge: %s returns to I%d" % (primarch.name, primarch.I))
-
-def ReapingBlowEnd(primarch, opponent, combat_round):
-    if not (primarch.underConcuss > 0):
-        primarch.I += 1
-        #print("Reaping Blow: %s returns to I%d" % (primarch.name, primarch.I))
+def DuellistsEdgeEnd(num):
+    def func(primarch, opponent, combat_round):
+        if not (primarch.underConcuss > 0):
+            primarch.I = max(1,primarch.I - num)
+    return func
 
 def ChargeBonusEnd(primarch, opponent, combat_round):
     if primarch.charge and "Shroud Bombs" not in opponent.rules:
@@ -434,10 +423,11 @@ def CounterAttackEnd(primarch, opponent, combat_round):
     if opponent.charge:
         primarch.A -= 1
 
-def FuriousChargeEnd(primarch, opponent, combat_round):
-    if primarch.charge:
-        primarch.S = max(0, primarch.S - 1)
-        #print("Furious Charge: %s loses the +1S" % primarch.name)
+def FuriousChargeEnd(num):
+    def func(primarch, opponent, combat_round):
+        if primarch.charge:
+            primarch.S = max(0, primarch.S - num)
+    return func
 
 def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
     if primarch.charge:
@@ -495,8 +485,7 @@ ShootingPreWoundThresholdDefenderRules = {
 
 ShootingPostWoundAttackerRules = {
     "Graviton Pulse": (2, GravitonPulse),
-    "Murderous Strike": (1, MurderousStrike),
-    "Murderous Strike (5+)": (1, MurderousStrike5),
+    "Murderous Strike(5)": (1, MurderousStrike(5)),
     #"Force": (1, Force),
     "Instant Death": (1, InstantDeath),
     "Rending(3)": (1, Rending(3)), #.______.
@@ -597,8 +586,7 @@ MeleePreWoundThresholdDefenderRules = {
     }
 
 MeleePostWoundAttackerRules = {
-    "Murderous Strike": (1, MurderousStrike),
-    "Murderous Strike (5+)": (1, MurderousStrike5),
+    "Murderous Strike(5)": (1, MurderousStrike(5)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
     "Wrath of Angels": (2, WrathOfAngels), #hack to ensure the new rolls have Instant Death
@@ -686,7 +674,7 @@ StartOfAssaultRules = {
     }
 
 ChargeRules = {
-    "Furious Charge": (1, FuriousCharge),
+    "Furious Charge(3)": (1, FuriousCharge(3)), #.___.
     "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
     "Counter-Attack": (1,CounterAttack),
     }
@@ -695,16 +683,16 @@ StartOfCombatRules = {
     "Sire of the Blood Angels": (1,SireOfTheBloodAngelsStart),
     "Preternatural Strategy": (1, PreternaturalStrategyIncrement),
     "Fighting Style": (1, FightingStyle),
-    "Duellist's Edge": (1,DuellistsEdgeStart),
+    "Duellist's Edge(1)": (1,DuellistsEdgeStart(1)),
     }
 
 EndOfCombatRules = {
     "Sire of the Blood Angels": (1,SireOfTheBloodAngelsEnd),
-    "Duellist's Edge": (1,DuellistsEdgeEnd),
+    "Duellist's Edge(1)": (1,DuellistsEdgeEnd(1)),
     }
 
 ChargeEndRules = {
-    "Furious Charge": (1, FuriousChargeEnd),
+    "Furious Charge(3)": (1, FuriousChargeEnd(3)),
     "Sire of the Raven Guard": (1, SireOfTheRavenGuardEnd),
     "Counter-Attack": (1,CounterAttackEnd),
     }
