@@ -121,6 +121,13 @@ def Hatred(attacker, attacker_weapon, defender, combat_round, hitRoll):
             rerollDie(hitRoll) #although this checks for reroll, we still check above to avoid printing messages
             print("Hatred: %d -> %d" % (old_value, hitRoll.value))
 
+def HatredPsykers(attacker, attacker_weapon, defender, combat_round, hitRoll): #.____.
+    if combat_round == 0 and (defender.name == "Konrad Curze" or defender.name == "Magnus the Red"):
+        if not hitRoll.rerolled and not hitRoll.success:
+            old_value = hitRoll.value
+            rerollDie(hitRoll) #although this checks for reroll, we still check above to avoid printing messages
+            print("Hatred: %d -> %d" % (old_value, hitRoll.value))
+
 def CoraxHatredTarget(defender):
     return type(defender) is Fulgrim or type(defender) is Perturabo or type(defender) is Horus or type(defender) is Curze or type(defender) is Alpharius or type(defender) is Mortarion or type(defender) is Angron
 
@@ -556,6 +563,7 @@ MeleePreHitThresholdDefenderRules = {
 MeleePreHitDieAttackerRules = {
     "Master-Crafted": (1, MasterCrafted),
     "Hatred": (1, Hatred),
+    "Hatred(Psykers)": (1, HatredPsykers),
     "CoraxHatred": (1, CoraxHatred),
     "Preferred Enemy": (1, PreferredEnemyHit),
     "Calculating Swordsman": (1, CalculatingSwordsman),
