@@ -134,7 +134,7 @@ class MercyAndForgiveness(MeleeWeapon):
     "Mercy & Forgiveness",
     lambda s: s,
     2,
-    ["Shred", "Murderous Strike"]
+    ["Shred", "Murderous Strike(4)"]
     )
 
 class BladeEncarmine(MeleeWeapon):
@@ -459,7 +459,7 @@ class Widowmakers(ShootingWeapon):
             12,
             "Assault",
             "3",
-            ["Lethal Precision"],
+            ["Rending(4)"],
             )
 
 class Infernus(ShootingWeapon):

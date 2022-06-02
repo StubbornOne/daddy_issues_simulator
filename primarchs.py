@@ -194,18 +194,15 @@ class Dorn(Primarch):
 
 class Curze(Primarch):
     def __init__(self):
-        super().__init__("Konrad Curze",8,6,6,6,6,7,6,10,2,4,4, #Paired has been added here
+        super().__init__("Konrad Curze",8,7,6,6,6,7,8,10,2,4,4, #+1A for claws
             [Widowmakers()],
           [MercyAndForgiveness()],
           [
-            #"Night Vision", "Acute Senses",
-            #"Sire of the Night Lords", #To impose Night Fighting
             "Hit and Run",
-            "Nightmare Mantle",
+            "Glimpse of Death", #TODO, no idea how Perils work yet
           ]
         )
-        self.cover = 4 #stealth, shrouded
-        self.how = True
+        #self.how = True #?
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):

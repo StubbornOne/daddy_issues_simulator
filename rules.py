@@ -163,7 +163,7 @@ def ArmourOfElavagar(attacker, defender, threshold):
 
 def LA_IF(attacker, defender, threshold):
     print("Legiones Astartes (Imperial Fists): Add +1 to hit with Bolt weapons")
-    return threshold - 1
+    return max(2, threshold - 1)
 
 def PhantasmalAura(attacker, defender, threshold):
     print("Phantasmal Aura applies -1 to hit: new threshold %d" % (threshold+1))
@@ -363,12 +363,6 @@ def Concussive(attacker, attacker_weapon, defender, woundRolls, saveRolls):
             print("Concussive: %s is concussed!" % defender.name)
             break #just one is enough
 
-def LethalPrecision(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for i in range(len(woundRolls)):
-        if woundRolls[i].value == 6 and saveRolls[i].saveType != SAVE_COVER:
-            saveRolls[i].success = False
-            print("Lethal Precision: w%d ignores armour and invuln saves" % woundRolls[i].value)
-
 def SoulBlaze(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     for i in range(len(saveRolls)):
         if not saveRolls[i].success:
@@ -531,7 +525,6 @@ ShootingPreSaveDieDefenderRules = {
 
 ShootingPostSaveAttackerRules = {
     "Concussive": (1, Concussive), #Ferrus' Graviton Gun
-    "Lethal Precision": (4, LethalPrecision),
     #"Deflagrate": (1, Deflagrate), #hardcoded test
     "Soul Blaze": (1, SoulBlaze),
     }
@@ -591,6 +584,7 @@ MeleePreWoundThresholdDefenderRules = {
 MeleePostWoundAttackerRules = {
     "Murderous Strike(6)": (1, MurderousStrike(6)), #._____.
     "Murderous Strike(5)": (1, MurderousStrike(5)),
+    "Murderous Strike(4)": (1, MurderousStrike(4)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
     "Wrath of Angels": (2, WrathOfAngels), #hack to ensure the new rolls have Instant Death
