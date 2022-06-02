@@ -259,17 +259,45 @@ class Angron(Primarch):
 
 class Guilliman(Primarch):
     def __init__(self):
-        super().__init__("Roboute Guilliman",7,6,6,6,6,6,5,10,2,4,4, #Two specialist weaps has been added here
+        super().__init__("Roboute Guilliman",7,6,6,6,6,6,7,10,2,4,4, #Two specialist weaps has been added here
             [Arbitrator()],
-          [GladiusIncandor(), HandOfDominion()],
-          [
-              #"Unyielding Will", "REROLL_DTW",
-              "Armour of Reason", "Preternatural Strategy", "IMMUNE_CONCUSS"
-          ]
+            [GladiusIncandor(), HandOfDominion()],
+            [
+                "Armour of Reason",
+                #"Preternatural Strategy",
+                "Calculating Swordsman"
+            ]
         )
         self.invulnreroll = False #Armour of Reason
-        self.challenge_counter = -1
-
+        self.previous_preter_choice = 3 #0: Fleet, 1: Counter, 2: FC, 3: Stubborn (dummy)
+    
+    def handleStartOfTurn(self):
+        super().handleStartOfTurn()
+        if self.active:
+            #Preternatural Strategy
+            #the no-successive rule is so irritating
+            if self.previous_preter_choice == 1:
+                self.rules.remove("Counter-Attack(1)")
+            elif self.previous_preter_choice == 2:
+                self.rules.remove("Furious Charge(1)")
+            #what to choose?
+            if self.in_combat:
+                #nothing matters except for preparing for H&R
+                if self.previous_preter_choice == 1:
+                    #too bad, can't get Counter again
+                    self.previous_preter_choice = 3
+                else:
+                    self.previous_preter_choice = 1
+                    self.rules.append("Counter-Attack(1)")
+            else:
+                #active and not in combat: Charge!
+                if self.previous_preter_choice == 2:
+                    #too bad, can't get FC again
+                    self.previous_preter_choice = 3
+                else:
+                    self.previous_preter_choice = 2
+                    self.rules.append("Furious Charge(1)")
+    
     def handleStartOfPhase(self):
         super().handleStartOfPhase()
         self.invulnreroll = False #refresh

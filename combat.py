@@ -386,11 +386,12 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 #use Moonsilver
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
-            if defender.T >=7 or needToConcuss(defender) or (defender.I > attacker.I and defender.name != "Angron") or defender.name == "Horus":
-                #use the HoD. T7+ => HoD higher toWound, Angron -> use blade for chance of Murderous Strike, Horus -> Hand is always S10, higher I -> attempt to concuss and then switch to blade
-                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
-            else:
+            if (defender.I < 7 and defender.W <= 2) or ("Feel No Pain(4)" in defender.rules):
+                #Gladius to 1. attempt a quick kill or 2. overcome a significant FNP (Curze's psychic power) (do some math to see if it's worth it)
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
+            else:
+                #HoD for brutal
+                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Ferrus Manus":
             attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             #then servo arm attacks
@@ -495,8 +496,6 @@ def attemptHitAndRun(primarch1, primarch2):
         print("Success!")
         primarch1.in_combat = False
         primarch2.in_combat = False
-        if "Preternatural Strategy" in primarch2.rules:
-            PreternaturalStrategyReset(primarch2)
 
 def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
     rules1 = getStartOfAssaultRules(primarch1)

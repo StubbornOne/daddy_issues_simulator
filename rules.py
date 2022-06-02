@@ -70,15 +70,6 @@ def SireOfTheBloodAngels(primarch, defender, combat_round):
 
 #####START OF COMBAT
 
-def PreternaturalStrategyIncrement(primarch, defender, combat_round):
-    if primarch.shadow_WS == 10:
-        return
-    primarch.challenge_counter += 1
-    if primarch.challenge_counter > 0:
-        primarch.shadow_WS = primarch.shadow_WS + 1
-        primarch.WS = primarch.shadow_WS
-        print("Preternatural Strategy: %s's WS increases to %d!" % (primarch.name, primarch.shadow_WS))
-
 def FightingStyle(primarch, defender, combat_round):
     #first, delete existing FIGHTING_STYLES
     if "FIGHTING_STYLE_SCOURGE" in primarch.rules: #._. abuse append/pop maybe?
@@ -144,6 +135,12 @@ def PreferredEnemyHit(attacker, attacker_weapon, defender, combat_round, hitRoll
     if not hitRoll.rerolled and hitRoll.value == 1:
         rerollDie(hitRoll)
         print("Preferred Enemy: 1 -> %d" % hitRoll.value)
+
+def CalculatingSwordsman(attacker, attacker_weapon, defender, combat_round, hitRoll):
+    if combat_round > 0:
+        if not hitRoll.rerolled and hitRoll.value == 1:
+            rerollDie(hitRoll)
+            print("CalculatingSwordsman: 1 -> %d" % hitRoll.value)
 
 def DarkFortuneHit(attacker, attacker_weapon, defender, combat_round, hitRoll):
     if combat_round == 0:
@@ -267,7 +264,7 @@ def Rending(num):
             if woundRoll.value >= num:
                 woundRoll.success = True
                 woundRoll.AP = min(woundRoll.AP, 2)
-                print("Rending: %s -> auto-Wound at AP2" % num)
+                print("Rending: %s and above -> auto-Wound at AP2" % num)
     return func
 
 def Breaching(num):
@@ -570,6 +567,7 @@ MeleePreHitDieAttackerRules = {
     "Hatred": (1, Hatred),
     "CoraxHatred": (1, CoraxHatred),
     "Preferred Enemy": (1, PreferredEnemyHit),
+    "Calculating Swordsman": (1, CalculatingSwordsman),
     }
 
 MeleePreHitDieDefenderRules = {
@@ -701,7 +699,6 @@ ChargeRules = {
     }
 
 StartOfCombatRules = {
-    "Preternatural Strategy": (1, PreternaturalStrategyIncrement),
     "Fighting Style": (1, FightingStyle),
     "Duellist's Edge(1)": (1,DuellistsEdgeStart(1)),
     }
@@ -808,12 +805,6 @@ def SerpentScalesSave():
     save = roll()
     print("Serpent's Scales: %d" % (save))
     return save >= 3
-
-def PreternaturalStrategyReset(primarch):
-    primarch.shadow_WS -= primarch.challenge_counter
-    primarch.challenge_counter = -1
-    primarch.WS = primarch.shadow_WS
-    print("Preternatural Strategy: %s resets WS%d" % (primarch.name, primarch.WS))
 
 def IWNDTest(primarch1):
     IWND_roll = roll()

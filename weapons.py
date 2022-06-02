@@ -197,7 +197,7 @@ class GladiusIncandor(MeleeWeapon):
     "Gladius Incandor",
     lambda s: s + 1,
     2,
-    ["Shred", "Murderous Strike"]
+    ["Master-Crafted", "Shred", "Murderous Strike(5)"]
     )
 
 class HandOfDominion(MeleeWeapon):
@@ -206,7 +206,7 @@ class HandOfDominion(MeleeWeapon):
     "Hand of Dominion",
     lambda s: 10,
     1,
-    ["Concussive", "Unwieldy"]
+    ["Master-Crafted", "Unwieldy", "Brutal(2)"]
     )
 
 class Silence(MeleeWeapon):
@@ -544,8 +544,8 @@ class Arbitrator(ShootingWeapon):
             18,
             "Assault",
             "2",
-            ["Rending"]
-            )
+            ["Master-Crafted", "Rending(5)"]
+        )
 
 class Lantern(ShootingWeapon):
     def __init__(self):
