@@ -155,11 +155,10 @@ def PreferredEnemyHit(attacker, attacker_weapon, defender, combat_round, hitRoll
         print("Preferred Enemy: 1 -> %d" % hitRoll.value)
 
 def DarkFortuneHit(attacker, attacker_weapon, defender, combat_round, hitRoll):
-    if combat_round == 0:
-        if not hitRoll.rerolled and hitRoll.value >= 5:
-            old_value = hitRoll.value
-            rerollDie(hitRoll)
-            print("Dark Fortune: %d -> %d" % (old_value, hitRoll.value))
+    if not hitRoll.rerolled and hitRoll.value >= 5:
+        old_value = hitRoll.value
+        rerollDie(hitRoll)
+        print("Dark Fortune: %d -> %d" % (old_value, hitRoll.value))
 
 #Threshold rules
 
@@ -226,11 +225,10 @@ def PreferredEnemyWound(attacker, attacker_weapon, defender, combat_round, wound
         print("Preferred Enemy: 1 -> %d" % woundRoll.value)
 
 def DarkFortuneWound(attacker, attacker_weapon, defender, combat_round, woundRoll):
-    if combat_round == 0:
-        if not woundRoll.rerolled and woundRoll.value >= 5:
-            old_value = woundRoll.value
-            rerollDie(woundRoll)
-            print("Dark Fortune: %d -> %d" % (old_value, woundRoll.value))
+    if not woundRoll.rerolled and woundRoll.value >= 5:
+        old_value = woundRoll.value
+        rerollDie(woundRoll)
+        print("Dark Fortune: %d -> %d" % (old_value, woundRoll.value))
 
 #needs this to ensure any normal roll is also blocked
 def AuricArmour(defender, threshold):
@@ -471,6 +469,9 @@ def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
 def WildfirePanoplyEnd(primarch, combat_round):
     primarch.invuln_shoot = 5
     #print("Wildfire Panoply: %s's invuln returns to 5++" % primarch.name)
+
+def DarkFortuneRemoval(primarch, combat_round):
+    primarch.rules.remove("Dark Fortune")
 
 ###############################RULE CATEGORIES###############################
 
@@ -735,6 +736,7 @@ ChargeEndRules = {
 
 EndOfAssaultRules = {
     "Wildfire Panoply": (1, WildfirePanoplyEnd),
+    "Dark Fortune": (1, DarkFortuneRemoval), #hack to ensure Dark Fortune is only used once
     }
 
 def getStartOfAssaultRules(primarch):
