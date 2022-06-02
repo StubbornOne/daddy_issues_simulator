@@ -111,6 +111,7 @@ def resolveWounds(attacker, attacker_weapon, defender, combat_round, hitRolls, a
     atkS = attacker_weapon.calculateAttackStrength(attacker.S)
     defT = defender.T
     #this is terrible, find a way to put them inside rules.py
+    """
     if attacker.charge and attackType == "Melee":
         if "PLUS_ONE_S_ON_CHARGE" in attacker_weapon.rules:
             atkS = min(10, atkS + 1)
@@ -118,18 +119,18 @@ def resolveWounds(attacker, attacker_weapon, defender, combat_round, hitRolls, a
         elif "PLUS_THREE_S_ON_CHARGE" in attacker_weapon.rules:
             atkS = min(10, atkS + 3)
             print("%s has +3S on the charge! S:%d" % (attacker_weapon.name, atkS))
-    if attackType == "Shooting":
-        if "Legiones Astartes (Iron Hands)" in defender.rules and attacker != defender: #Gets Hot lul
-            atkS = max(1, atkS - 1) #to avoid accessing chart[-1]
-            print("Sire of the Iron Hands: Shooting attacks have -1S against %s! S:%d" % (defender.name, atkS))
-        if "Draken Scale" in defender.rules and ("Plasma" in attacker_weapon.rules or "Flame" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules or "Melta" in attacker_weapon.rules):
-            atkS = max(1, atkS // 2) #rounded down!
-            print("Draken Scale: Reduced to half strength! S:%d" % atkS)
+    """
+    if defender.name == "Ferrus Manus" and attackType == "Shooting" and attacker != defender: #Gets Hot lul
+        atkS = max(1, atkS - 1) #to avoid accessing chart[-1]
+        print("Medusa's Scales: Shooting attacks have -1S against %s! S:%d" % (defender.name, atkS))
+    if defender.name == "Horus Lupercal" and (attacker.charge or defender.charge) and attackType == "Melee":
+        atkS = max(1, atkS - 1) #to avoid accessing chart[-1]
+        print("Merciless Fighters: %s's melee attacks suffer -1S! S%d" % (attacker.name, atkS))
     threshold = thresholdToWound(atkS, defT)
     #apply threshold stuff, if any
     rules = collectRules(attacker, attacker_weapon, defender, combat_round, "%sPreWoundThreshold" % attackType)
     for rule in rules:
-        threshold = rule[1](attacker, defender, threshold)
+        threshold = rule[1](attacker, attacker_weapon, defender, threshold)
 
     print("%d+ to wound..." % threshold)
     
@@ -282,11 +283,11 @@ def shootWeapon(attacker, weapon, defender, combat_round):
 def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap shot except for Overwatch
     #choose weapon(s)
     weapons = []
-    if attacker.name == "Ferrus Manus":
+    if attacker.name == "Ferrus Manus": #assume this is what Firing Protocols do
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
         weapons.append(attacker.shooting_weapons[2])
-    elif attacker.name == "Corvus Corax" and len(attacker.shooting_weapons) > 1: #get the two Archaeotech pistols
+    elif attacker.name == "Corvus Corax":
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
     elif attacker.name == "Jaghatai Khan" and len(attacker.shooting_weapons) > 1: #Mounted, assume this is what Firing Protocols do
@@ -366,14 +367,12 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
     else: #should be 2
         assert (len(attacker.melee_weapons) == 2)
         if attacker.name == "Horus Lupercal":
-            if "IMMUNE_CONCUSS" in defender.rules or not needToConcuss(defender):
-                #no reason to use Worldbreaker
+            if (defender.I < 7 and defender.W <= 2):
+                #attempt a quick kill
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             else:
-                #split X-1 Talon-Worldbreaker. Master-crafted will improve Worldbreaker's 1 attack
-                #though if you really need to concuss you should spend more on Worldbreaker...
-                attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks-1])
-                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, 1])
+                #Worldbreaker all the way for Brutal(2)
+                attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Leman Russ":
             #Can Russ still split his attacks...?
             if defender.T <= 6 or defender.name == "Rogal Dorn": #TODO: Proper calculation esp. concerning Brutal
@@ -382,7 +381,7 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 #use the Axe
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Sanguinius": #Spear config
-            if defender.name == "Konrad Curze" or defender.name == "Magnus the Red":
+            if defender.psyker:
                 #use Moonsilver
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":

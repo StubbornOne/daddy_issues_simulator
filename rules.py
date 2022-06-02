@@ -71,22 +71,7 @@ def SireOfTheBloodAngels(primarch, defender, combat_round):
 #####START OF COMBAT
 
 def FightingStyle(primarch, defender, combat_round):
-    #first, delete existing FIGHTING_STYLES
-    if "FIGHTING_STYLE_SCOURGE" in primarch.rules: #._. abuse append/pop maybe?
-        primarch.rules.remove("FIGHTING_STYLE_SCOURGE")
-    #if "FIGHTING_STYLE_DEATH_STRIKE" in primarch.rules:
-    #primarch.rules.remove("FIGHTING_STYLE_DEATH_STRIKE")
-    if (primarch.active) and "FIGHTING_STYLE_SHADOW_WALK" in primarch.rules:
-        primarch.rules.remove("FIGHTING_STYLE_SHADOW_WALK")
-    #you will never use Death Strike until IA Magnus is implemented
-    #stick to: if your own turn, shadow-walk (for 2 rounds' worth)
-    #then, Scourge
-    if (primarch.active or combat_round==0):
-        print("Fighting Style: Chose Shadow-Walk")
-        primarch.rules.append("FIGHTING_STYLE_SHADOW_WALK")
-    else:
-        print("Fighting Style: Chose Scourge")
-        primarch.rules.append("FIGHTING_STYLE_SCOURGE")
+    return
 
 #technically it should be during attack selection?
 #also: does this actually modify the Init value? People assume so, but DEdge says "score" and RB says "fights at -1 Init", not change the value
@@ -122,7 +107,7 @@ def Hatred(attacker, attacker_weapon, defender, combat_round, hitRoll):
             print("Hatred: %d -> %d" % (old_value, hitRoll.value))
 
 def HatredPsykers(attacker, attacker_weapon, defender, combat_round, hitRoll): #.____.
-    if combat_round == 0 and (defender.name == "Konrad Curze" or defender.name == "Magnus the Red"):
+    if combat_round == 0 and defender.psyker:
         if not hitRoll.rerolled and not hitRoll.success:
             old_value = hitRoll.value
             rerollDie(hitRoll) #although this checks for reroll, we still check above to avoid printing messages
@@ -149,13 +134,6 @@ def CalculatingSwordsman(attacker, attacker_weapon, defender, combat_round, hitR
             rerollDie(hitRoll)
             print("CalculatingSwordsman: 1 -> %d" % hitRoll.value)
 
-def DarkFortuneHit(attacker, attacker_weapon, defender, combat_round, hitRoll):
-    if combat_round == 0:
-        if not hitRoll.rerolled and hitRoll.value >= 5:
-            old_value = hitRoll.value
-            rerollDie(hitRoll)
-            print("Dark Fortune: %d -> %d" % (old_value, hitRoll.value))
-
 #Threshold rules
 
 def LA_DA(attacker, defender, threshold):
@@ -169,24 +147,35 @@ def ArmourOfElavagar(attacker, defender, threshold):
         print("Armour of Elavagar applies -1 to hit: new threshold %d" % threshold)
     return threshold
 
+def MasterOfWeapons(attacker, defender, threshold):
+    print("MasterOfWeapons limits hit threshold to 4+")
+    return max(threshold, 4)
+
 def LA_IF(attacker, defender, threshold):
     print("Legiones Astartes (Imperial Fists): Add +1 to hit with Bolt weapons")
     return max(2, threshold - 1)
 
-def FightingStyleShadowWalk(attacker, defender, threshold):
-    print("Fighting-Style: Shadow-walk applies -1 to hit: new threshold %d" % (threshold+1))
-    return threshold + 1
-
 ####################POSTHIT#########################
+
+def BurstD6(attacker, attacker_weapon, defender, hitRolls):
+    #assume only one roll in hitRolls
+    if hitRolls[0].success:
+        mult = roll()
+        print("Burst(D6): %s hits!" % mult)
+        for i in range(1,mult):
+            new_hitRoll = Die(hitRolls[0].value)
+            new_hitRoll.success = True
+            new_hitRoll.evaluated = True
+            hitRolls.append(new_hitRoll)
 
 ####################PREWOUND####################
 
-def EncarmineFury(attacker, defender, threshold):
+def EncarmineFury(attacker, attacker_weapon, defender, threshold):
     if attacker.charge:
         return max(2, threshold-1)
     return threshold
 
-def Fleshbane(attacker, defender, threshold):
+def Fleshbane(attacker, attacker_weapon, defender, threshold):
     if "Preternatural Resilience" in defender.rules:
         #So this is the funny part; unlike immunity, Preternatural Resilience is written to hijack flat rolls, as with the DG's intent to spam rad and phosphex
         #However, unlike Poison, Fleshbane has no "use strength's higher threshold"
@@ -207,9 +196,15 @@ def Fleshbane(attacker, defender, threshold):
     return 2
 
 #needs this to ensure any normal roll is also blocked
-def AuricArmour(attacker, defender, threshold):
+def AuricArmour(attacker, attacker_weapon, defender, threshold):
     print("Auric Armour limits wound threshold to 4+")
     return max(threshold, 4)
+
+def BloodOfFire(attacker, attacker_weapon, defender, threshold):
+    if "Flame" in attacker_weapon.rules or "Melta" in attacker_weapon.rules or "Plasma" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules:
+        print("Blood of Fire: -1 to Wound!")
+        threshold = threshold + 1
+    return threshold
 
 def ChildOfTerra(attacker, attacker_weapon, defender, combat_round, woundRoll):
     if not woundRoll.rerolled and woundRoll.value == 1:
@@ -226,13 +221,6 @@ def PreferredEnemyWound(attacker, attacker_weapon, defender, combat_round, wound
     if not woundRoll.rerolled and woundRoll.value == 1:
         rerollDie(woundRoll)
         print("Preferred Enemy: 1 -> %d" % woundRoll.value)
-
-def DarkFortuneWound(attacker, attacker_weapon, defender, combat_round, woundRoll):
-    if combat_round == 0:
-        if not woundRoll.rerolled and woundRoll.value >= 5:
-            old_value = woundRoll.value
-            rerollDie(woundRoll)
-            print("Dark Fortune: %d -> %d" % (old_value, woundRoll.value))
 
 #POSTWOUND
 def GravitonPulse(attacker, attacker_weapon, defender, woundRolls):
@@ -294,7 +282,7 @@ def ArmourOfTheWord(attacker, attacker_weapon, defender, threshold):
     return threshold
 
 def ArmourOfElavagarShooting(attacker, attacker_weapon, defender, threshold):
-    if "Plasma" in attacker_weapon.rules or "Flamer" in attacker_weapon.rules: #no melta
+    if "Plasma" in attacker_weapon.rules or "Flame" in attacker_weapon.rules: #no melta
         print("Armour of Elavagar: 3++ against %s" % attacker_weapon.name)
         return 3
     return threshold
@@ -324,6 +312,13 @@ def RegaliaResplendent(attacker, attacker_weapon, defender, combat_round, saveRo
             old_value = saveRoll.value
             rerollDie(saveRoll)
             print("Regalia Resplendent: %d -> %d" % (old_value, saveRoll.value))
+
+def DrakenScale(attacker, attacker_weapon, defender, combat_round, saveRoll):
+    if "Flame" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules:
+        if not saveRoll.rerolled and not saveRoll.success and saveRoll.saveType == SAVE_ARMOUR:
+            old_value = saveRoll.value
+            rerollDie(saveRoll)
+            print("Draken Scale: %d -> %d" % (old_value, saveRoll.value))
 
 #POSTSAVE
 
@@ -397,20 +392,6 @@ def FeelNoPain(num):
                     saveRolls[i].success = True #"treat it as having been saved"
     return func
 
-def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for i in range(len(saveRolls)):
-        if not saveRolls[i].success:
-            if "Serpent's Scales" in defender.rules:
-                if SerpentScalesSave():
-                    print("Disabling Strike: saved!")
-                    continue #this is per wound!
-            print("w%d: Disabling Strike!" % woundRolls[i].value)
-            defender.WS = max(1, defender.WS - 1) #NOTE: I'm not sure if WS can drop to 0
-            defender.S = max(0, defender.S - 1)
-            defender.shadow_WS = max(1, defender.shadow_WS - 1)
-            defender.shadow_S = max(1, defender.shadow_S - 1)
-            print("Disabling Strike: %s now at WS%d S%d" % (defender.name, defender.WS, defender.S))
-
 #######END OF COMBAT
 def DuellistsEdgeEnd(num):
     def func(primarch, opponent, combat_round):
@@ -470,10 +451,10 @@ ShootingPreHitDieAttackerRules = {
     }
 
 ShootingPreHitDieDefenderRules = {
-    "Dark Fortune": (1, DarkFortuneHit),
     }
 
 ShootingPostHitAttackerRules = {
+    "Burst(D6)": (1, BurstD6),
     }
 
 ShootingPostHitDefenderRules = {
@@ -484,7 +465,6 @@ ShootingPreWoundDieAttackerRules = {
     }
 
 ShootingPreWoundDieDefenderRules = {
-    "Dark Fortune": (1, DarkFortuneWound),
 }
 
 ShootingPreWoundThresholdAttackerRules = {
@@ -493,6 +473,7 @@ ShootingPreWoundThresholdAttackerRules = {
 
 ShootingPreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
+    "Blood of Fire": (1, BloodOfFire),
     }
 
 ShootingPostWoundAttackerRules = {
@@ -500,10 +481,10 @@ ShootingPostWoundAttackerRules = {
     "Murderous Strike(5)": (1, MurderousStrike(5)),
     #"Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending(3)": (1, Rending(3)), #.______.
-    "Rending(4)": (1, Rending(4)), #.______.
-    "Rending(5)": (1, Rending(5)), #.______.
-    "Rending(6)": (1, Rending(6)), #.______.
+    "Rending(3)": (3, Rending(3)), #.______.
+    "Rending(4)": (3, Rending(4)), #.______.
+    "Rending(5)": (3, Rending(5)), #.______.
+    "Rending(6)": (3, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
@@ -537,6 +518,7 @@ ShootingPreSaveDieDefenderRules = {
     "Leonine Panoply": (1, LeoninePanoply),
     "Armour of Reason": (1, ArmourOfReason),
     "Regalia Resplendent": (1, RegaliaResplendent),
+    "Draken Scale": (1, DrakenScale),
     }
 
 ShootingPostSaveAttackerRules = {
@@ -557,7 +539,7 @@ MeleePreHitThresholdAttackerRules = {
 
 MeleePreHitThresholdDefenderRules = {
     "Armour of Elavagar": (1, ArmourOfElavagar),
-    "FIGHTING_STYLE_SHADOW_WALK": (1, FightingStyleShadowWalk),
+    "Master of Weapons": (0, MasterOfWeapons), #supercede?
     }
 
 MeleePreHitDieAttackerRules = {
@@ -570,7 +552,6 @@ MeleePreHitDieAttackerRules = {
     }
 
 MeleePreHitDieDefenderRules = {
-    "Dark Fortune": (1, DarkFortuneHit),
     }
 
 MeleePostHitAttackerRules = {
@@ -586,7 +567,6 @@ MeleePreWoundDieAttackerRules = {
     }
 
 MeleePreWoundDieDefenderRules = {
-    "Dark Fortune": (1, DarkFortuneWound),
 }
 
 MeleePreWoundThresholdAttackerRules = {
@@ -596,19 +576,23 @@ MeleePreWoundThresholdAttackerRules = {
 
 MeleePreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
+    #"Blood of Fire": (1, BloodOfFire), #Flame melee weapon...?
     }
 
 MeleePostWoundAttackerRules = {
     "Murderous Strike(6)": (1, MurderousStrike(6)), #._____.
     "Murderous Strike(5)": (1, MurderousStrike(5)),
     "Murderous Strike(4)": (1, MurderousStrike(4)),
+    "Murderous Strike(3)": (1, MurderousStrike(3)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending(3)": (1, Rending(3)), #.______.
-    "Rending(4)": (1, Rending(4)), #.______.
-    "Rending(5)": (1, Rending(5)), #.______.
-    "Rending(6)": (1, Rending(6)), #.______.
+    "Rending(3)": (3, Rending(3)), #.______.
+    "Rending(4)": (3, Rending(4)), #.______.
+    "Rending(5)": (3, Rending(5)), #.______.
+    "Rending(6)": (3, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
+    #"Brutal(2)": (2, Brutal(2)),
+    #"Brutal(3)": (2, Brutal(3)),
     }
 
 MeleePostWoundDefenderRules = {
@@ -642,10 +626,10 @@ MeleePreSaveDieDefenderRules = {
     "Leonine Panoply": (1, LeoninePanoply),
     "Armour of Reason": (1, ArmourOfReason),
     "Regalia Resplendent": (1, RegaliaResplendent),
+    #"Draken Scale": (1, DrakenScale), #Flame melee weapon...?
     }
 
 MeleePostSaveAttackerRules = {
-    "Disabling Strike": (1, DisablingStrike),
     "Moonsilver": (3, Moonsilver),
     }
 
@@ -808,7 +792,7 @@ def SerpentScalesSave():
 def IWNDTest(primarch):
     IWND_roll = roll()
     threshold = 5
-    if primarch.name == "Mortarion" or primarch.name == "Vulkan":
+    if primarch.name == "Mortarion" or primarch.name == "Lorgar" or primarch.name == "Vulkan":
         threshold = 4
     print("%s rolls It Will Not Die: %d" % (primarch.name, IWND_roll))
     """

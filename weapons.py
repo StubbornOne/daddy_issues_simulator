@@ -233,16 +233,16 @@ class Worldbreaker(MeleeWeapon):
     "Worldbreaker",
     lambda s: 10,
     2,
-    ["Master-Crafted", "Concussive", "Unwieldy"]
+    ["Master-Crafted", "Unwieldy", "Brutal(2)"]
     )
 
 class Talon(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Warmaster's Talon",
+    "The Warmaster's Talon",
     lambda s: s,
     2,
-    ["Shred", "Disabling Strike"]
+    ["Shred"]
     )
 
 class Illuminarum(MeleeWeapon):
@@ -251,7 +251,7 @@ class Illuminarum(MeleeWeapon):
     "Illuminarum",
     lambda s: s+2,
     2,
-    ["Master-Crafted", "Concussive", "Smash"]
+    ["Master-Crafted", "Brutal(2)"]
     )
 
 class Dawnbringer(MeleeWeapon):
@@ -260,7 +260,7 @@ class Dawnbringer(MeleeWeapon):
     "Dawnbringer",
     lambda s: 10,
     1,
-    ["Concussive", "Instant Death"]
+    ["Master-Crafted", "Instant Death"]
     )
 
 class PanoplyOfTheRavenLord(MeleeWeapon):
@@ -268,8 +268,8 @@ class PanoplyOfTheRavenLord(MeleeWeapon):
         super().__init__(
     "Panoply of the Raven Lord",
     lambda s: s,
-    1,
-    ["Shred"]
+    2,
+    ["Shred", "Murderous Strike(4)"]
     )
 
 class PaleSpear(MeleeWeapon):
@@ -434,7 +434,7 @@ class PsyfireSerpenta(ShootingWeapon):
             15,
             "Assault",
             "3", #Hooray no more D3, TODO: change to numbers
-            ["Plasma"],
+            ["Plasma"], #Force??
             )
 
 class VoiceOfTerra(ShootingWeapon):
@@ -519,8 +519,8 @@ class HeavyFlamer(ShootingWeapon):
             7, #Template
             "Heavy",
             "1",
-            ["Template", "Ignores Cover", "Flamer"]
-            )
+            ["Template", "Ignores Cover", "Flame"]
+        )
 
 class SpiteFurnace(ShootingWeapon):
     def __init__(self):
@@ -583,41 +583,53 @@ class TalonGun(ShootingWeapon):
         ["Twin-linked"]
         )
 
-class PrecisionBombardment_Horus(ShootingWeapon):
+class Devotion(ShootingWeapon):
     def __init__(self):
         super().__init__(
-            "Precision Bombardment",
-            lambda s: 10,
+            "Devotion",
+            lambda s: 8,
             2,
-            255,
-            "Ordnance",
+            12,
+            "Pistol",
             "1",
-            ["Twin-linked", "One-Use", "Large Blast"] #Unlike Pert, Horus does not explicitly have "don't count as shooting"
-            )
-
-class SalvagedHeavyBolter(ShootingWeapon):
-    def __init__(self):
-        super().__init__(
-            "Salvaged Heavy Bolter",
-            lambda s: 5,
-            4,
-            36,
-            "Assault",
-            "3",
-            []
+            ["Master-Crafted", "Haywire"]
             )
 
 class FurnacesHeart(ShootingWeapon):
     def __init__(self):
         super().__init__(
     "Furnace's Heart",
-    lambda s: 6,
+    lambda s: 7,
     2,
     18,
-    "Assault",
+    "Pistol",
     "1",
-    ["Rending", "Line of Effect"]
+    ["Burst(D6)"]
     )
+
+class WrathAndJustice(ShootingWeapon):
+    def __init__(self):
+        super().__init__(
+            "Wrath and Justice",
+            lambda s: 6,
+            4,
+            12,
+            "Pistol",
+            "1",
+            ["Volkite","Rending(3)","Master-Crafted"]
+        )
+
+class HydrasSpite(ShootingWeapon):
+    def __init__(self):
+        super().__init__(
+            "Hydra's Spite",
+            lambda s: 8,
+            3,
+            18,
+            "Assault",
+            "2",
+            ["Rending(4)","Master-Crafted"]
+        )
 
 class SoulBlazeAttack(ShootingWeapon):
     def __init__(self):

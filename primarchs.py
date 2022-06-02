@@ -29,7 +29,7 @@ class Primarch:
         self.armour = armour
         self.cover = 7
         self.how = False
-        self.rerollIWND = False
+        self.psyker = False
         self.invuln_shoot = invuln_shoot
         self.invuln_melee = invuln_melee
         self.shooting_weapons = shooting_weapons
@@ -200,6 +200,7 @@ class Curze(Primarch):
             ]
         )
         #self.how = True #?
+        self.psyker = True
 
 class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
@@ -227,7 +228,7 @@ class Ferrus(Primarch):
             [PlasmaBlaster(), GravitonGun(), HeavyFlamer(), GrenadeHarness()], #idk what is a Graviton shredder
             [Forgebreaker_Ferrus(), ServoArm()],
             [
-                "Legiones Astartes (Iron Hands)",
+                #"Legiones Astartes (Iron Hands)",
                 "Feel No Pain(6)" #Is "Sire of the Iron Hands"
             ]
         )
@@ -322,94 +323,84 @@ class Magnus(Primarch):
           ]
         )
         self.cover = 5
+        self.psyker = True
 
 class Horus(Primarch):
     def __init__(self):
-        super().__init__("Horus Lupercal",8,5,7,6,6,6,6,10,2,3,3, #+1A for two weapons added
+        super().__init__("Horus Lupercal",8,6,7,7,7,6,7,10,2,3,3, #+1A for two weapons added
         [TalonGun()],
           [Talon(), Worldbreaker()],
           [
-              #"Weapon Mastery", just hardcoded based on name. need specific analysis on how to split anyway
-              "Serpent's Scales"
+              "Master of Weapons",
+              #"Legiones Astartes (Sons of Horus)"
           ]
         )
-    def getAttacks(self, defender, combat_round):
-        if defender.WS <= 4:
-            #Sire of the SoH
-            extra_attacks = roll(3)
-            print("Sire of the Sons of Horus: Opponent WS%d, Horus gains %d attacks" % (defender.WS, extra_attacks))
-            return self.A + extra_attacks
-        return self.A
 
 class Lorgar(Primarch):
     def __init__(self):
-        super().__init__("Lorgar Aurelian",6,6,6,6,5,6,5,10,2,4,4, #+1A for pistol
-            [ArchaeotechPistol()],
+        super().__init__("Lorgar Aurelian",6,6,6,6,6,6,6,10,2,4,4, #+1A for Pistol
+            [Devotion()],
           [Illuminarum()],
           [
-              "Dark Fortune",
               "Armour of the Word"
           ]
         )
+        self.psyker = True
 
 class Vulkan(Primarch):
     def __init__(self):
-        super().__init__("Vulkan",7,5,7,7,6,5,4,10,2,3,3,
+        super().__init__("Vulkan",7,6,7,7,6,5,6,10,2,3,3,
             [FurnacesHeart(), HeavyFlamer()],
-          [Dawnbringer()],
-          [
-              "Draken Scale",
-          ]
+            [Dawnbringer()],
+            [
+                "Blood of Fire",
+                "Draken Scale",
+            ]
         )
         #Vulkan's heavy flamer is S6
         self.shooting_weapons[1].str_modifier = lambda s: 6
-        self.rerollIWND = True #Blood of Fire
+        self.shooting_weapons[1].weapontype = "Assault"
 
 class Corax(Primarch):
-    def __init__(self, time=""):
-        super().__init__("Corvus Corax",7,6,6,6,6,7,6,10,2,5,5,
-            [],
-          [PanoplyOfTheRavenLord()],
-          [
-                "Fighting Style",
-              "Sire of the Raven Guard", "Shroud Bombs", #"Shadowed Lord",
-              "Hit and Run"
-          ]
+    def __init__(self):
+        super().__init__("Corvus Corax",7,6,6,6,6,7,7,10,2,4,4,
+            [WrathAndJustice(), WrathAndJustice()],
+            [PanoplyOfTheRavenLord()],
+            [
+                #"Legiones Astartes (Raven Guard)", #which choice???
+                #"Fighting Style", #don't know Rage(x) and Sudden Strike(x) yet, so assume Murderous Strike
+                "Hit and Run",
+                #"Shadowed Lord", #given the way we H&R, this will never come into play
+            ]
         )
-        if time == "Post-Isstvan":
-            self.W = 5
-            self.shadow_W = 5
-            self.A = 5
-            self.shadow_A = 5
-            self.armour = 3
-            self.shooting_weapons.append(SalvagedHeavyBolter())
-        else:
-            self.shooting_weapons.append(ArchaeotechPistol())
-            self.shooting_weapons.append(ArchaeotechPistol())
-            self.how = True
-            self.rules.append("Korvidine Pinions")
-        
-    def getAttacks(self, defender, combat_round):
-        if "FIGHTING_STYLE_SCOURGE" in self.rules:
-            extra_attacks = roll(3)
-            print("Fighting Style (Scourge): Corax gains %d attacks" % extra_attacks)
-            return self.A + extra_attacks
-        return self.A
+        #self.how = True #?
+        self.cover = 4
 
 class Alpharius(Primarch):
     def __init__(self):
-        super().__init__("Alpharius",7,7,6,6,6,6,5,10,2,4,4,
-            [PlasmaBlaster()], #ignore assault grenades
-          [PaleSpear()],
-          [
-                "Preferred Enemy",
-              "Counter-Attack", "Hammer of Wrath",
-              "Pythian Scales"
-          ]
+        super().__init__("Alpharius",7,7,6,6,6,6,6,10,2,4,4,
+            [HydrasSpite()],
+            [PaleSpear()],
+            [
+                "Pythian Scales"
+            ]
         )
-        #this should be done by modifying the constructor of PlasmaBlaster
-        self.shooting_weapons[0].rules.append("Master-Crafted")
-        self.shooting_weapons[0].mastercrafted_rerolled = False
+        self.usedPreferredEnemy = False
+        self.usedSuddenStrike = False
+
+    def handleStartOfTurn(self):
+        super().handleStartOfTurn()
+        if "Preferred Enemy" in self.rules:
+            self.rules.remove("Preferred Enemy")
+        if "Sudden Strike(1)" in self.rules:
+            self.rules.remove("Sudden Strike(1)")
+        #TODO: There is more nuance to when to pop either
+        if not self.usedPreferredEnemy:
+            self.rules.append("Preferred Enemy")
+            self.usedPreferredEnemy = True
+        elif not self.usedSuddenStrike:
+            self.rules.append("Sudden Strike(1)")
+            self.usedSuddenStrike = True
 
 class DummyPrimarch(Primarch):
     def __init__(self):
@@ -466,8 +457,6 @@ def createPrimarchFromName(name):
         return Khan("Afoot")
     elif name == "Sanguinius_Spear":
         return Sanguinius("Spear of Telesto")
-    elif name == "Corax_PostIsstvan":
-        return Corax("Post-Isstvan")
     return None #what
 
 primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
@@ -475,5 +464,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Corax_PostIsstvan"
+                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
                   ]
