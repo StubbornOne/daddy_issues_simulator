@@ -380,17 +380,19 @@ def SoulBlaze(attacker, attacker_weapon, defender, woundRolls, saveRolls):
             defender.sufferSoulBlaze = True
             break #just one is enough
 
-def FeelNoPain(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    for i in range(len(saveRolls)):
-        if not saveRolls[i].success:
-            if "Instant Death" in woundRolls[i].effects:
-                print("FNP: w%d has Instant Death" % woundRolls[i].value)
-                continue
-            fnp = roll()
-            print("w%d: %s rolls Feel No Pain: %d" % (woundRolls[i].value, defender.name, fnp))
-            if fnp >= 5:
-                print("Wound counted as saved!")
-                saveRolls[i].success = True #"treat it as having been saved"
+def FeelNoPain(num):
+    def func(attacker, attacker_weapon, defender, woundRolls, saveRolls):
+        for i in range(len(saveRolls)):
+            if not saveRolls[i].success:
+                if "Instant Death" in woundRolls[i].effects:
+                    print("FNP: w%d has Instant Death" % woundRolls[i].value)
+                    continue
+                fnp = roll()
+                print("w%d: %s rolls Feel No Pain(%d): %d" % (woundRolls[i].value, defender.name, num, fnp))
+                if fnp >= num:
+                    print("Wound counted as saved!")
+                    saveRolls[i].success = True #"treat it as having been saved"
+    return func
 
 def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     for i in range(len(saveRolls)):
@@ -409,8 +411,7 @@ def DisablingStrike(attacker, attacker_weapon, defender, woundRolls, saveRolls):
 #######END OF COMBAT
 def DuellistsEdgeEnd(num):
     def func(primarch, opponent, combat_round):
-        if not (primarch.underConcuss > 0):
-            primarch.I = max(1,primarch.I - num)
+        primarch.I = max(1,primarch.I - num)
     return func
 
 def ChargeBonusEnd(primarch, defender, combat_round):
@@ -533,13 +534,13 @@ ShootingPreSaveDieDefenderRules = {
     }
 
 ShootingPostSaveAttackerRules = {
-    "Concussive": (1, Concussive), #Ferrus' Graviton Gun
     #"Deflagrate": (1, Deflagrate), #hardcoded test
     "Soul Blaze": (1, SoulBlaze),
     }
 
 ShootingPostSaveDefenderRules = {
-    "Feel No Pain": (3, FeelNoPain), #want this to happen BEFORE reducing wounds
+    "Feel No Pain(4)": (3, FeelNoPain(4)),
+    "Feel No Pain(6)": (3, FeelNoPain(6)), #want this to happen BEFORE reducing wounds
     }
 
 ###############MELEE###############
@@ -638,14 +639,13 @@ MeleePreSaveDieDefenderRules = {
     }
 
 MeleePostSaveAttackerRules = {
-    #"Strikedown": (1, Strikedown),
-    "Concussive": (1, Concussive),
     "Disabling Strike": (1, DisablingStrike),
     "Moonsilver": (3, Moonsilver),
     }
 
 MeleePostSaveDefenderRules = {
-    "Feel No Pain": (3, FeelNoPain), #want this to happen BEFORE reducing wounds
+    "Feel No Pain(4)": (3, FeelNoPain(4)), #want this to happen BEFORE reducing wounds
+    "Feel No Pain(6)": (3, FeelNoPain(6)),
     }
 
 #ugggh

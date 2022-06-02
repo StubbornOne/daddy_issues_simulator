@@ -225,19 +225,20 @@ class Sanguinius(Primarch):
             self.melee_weapons.append(MoonsilverBlade())
 
 class Ferrus(Primarch):
-    def __init__(self, weapon="Forgebreaker"):
-        super().__init__("Ferrus Manus",7,6,7,7,6,5,4,10,2,3,3,
-              [PlasmaBlaster(), GravitonGun(), GrenadeHarness(), HeavyFlamer()], #RAW technically Ferrus DOESN'T have these and can't overwatch???
-            [],
-              [
-                  "Sire of the Iron Hands", "Medusan Carapace", #"Relentless",
-              ]
+    def __init__(self):
+        super().__init__("Ferrus Manus",7,6,7,7,6,6,6,10,2,3,3,
+            [PlasmaBlaster(), GravitonGun(), HeavyFlamer(), GrenadeHarness()], #idk what is a Graviton shredder
+            [Forgebreaker_Ferrus(), ServoArm()],
+            [
+                "Legiones Astartes (Iron Hands)",
+                "Feel No Pain(6)" #Is "Sire of the Iron Hands"
+            ]
         )
-        if weapon == "Forgebreaker":
-            self.melee_weapons.append(Forgebreaker_Ferrus())
-        else:
-            self.melee_weapons.append(Fists_Ferrus())
-        self.melee_weapons.append(ServoArm())
+        #this should be done by modifying the constructor of PlasmaBlaster
+        self.shooting_weapons[0].rules.append("Master-Crafted")
+        self.shooting_weapons[0].mastercrafted_rerolled = False
+        self.shooting_weapons[1].rules.append("Master-Crafted")
+        self.shooting_weapons[1].mastercrafted_rerolled = False
 
 class Angron(Primarch):
     def __init__(self):
@@ -434,8 +435,6 @@ def createPrimarchFromName(name):
         return Khan("Afoot")
     elif name == "Sanguinius_Spear":
         return Sanguinius("Spear of Telesto")
-    elif name == "Ferrus_Fists":
-        return Ferrus("Fists")
     elif name == "Corax_PostIsstvan":
         return Corax("Post-Isstvan")
     return None #what
@@ -445,5 +444,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Ferrus_Fists", "Corax_PostIsstvan"
+                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear", "Corax_PostIsstvan"
                   ]

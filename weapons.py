@@ -167,11 +167,11 @@ class MoonsilverBlade(MeleeWeapon):
 class Forgebreaker_Ferrus(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Forgebreaker",
-                        lambda s: s * 2,
-                        1,
-                        ["Strikedown", "Concussive"]
-                    )
+        "Forgebreaker",
+        lambda s: 12,
+        1,
+        ["Master-Crafted", "Brutal(3)"]
+    )
 
 class Fists_Ferrus(MeleeWeapon):
     def __init__(self):
@@ -504,7 +504,7 @@ class GravitonGun(ShootingWeapon):
             18,
             "Heavy",
             "1",
-            ["Haywire","Concussive","Graviton Pulse"]
+            ["Haywire","Concussive", "Graviton Pulse"]
             )
 
 #this is really crap and I cannot think of when Ferrus would use

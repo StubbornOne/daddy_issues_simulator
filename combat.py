@@ -116,7 +116,7 @@ def resolveWounds(attacker, attacker_weapon, defender, combat_round, hitRolls, a
             atkS = min(10, atkS + 3)
             print("%s has +3S on the charge! S:%d" % (attacker_weapon.name, atkS))
     if attackType == "Shooting":
-        if "Sire of the Iron Hands" in defender.rules and attacker != defender: #Gets Hot lul
+        if "Legiones Astartes (Iron Hands)" in defender.rules and attacker != defender: #Gets Hot lul
             atkS = max(1, atkS - 1) #to avoid accessing chart[-1]
             print("Sire of the Iron Hands: Shooting attacks have -1S against %s! S:%d" % (defender.name, atkS))
         if "Draken Scale" in defender.rules and ("Plasma" in attacker_weapon.rules or "Flame" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules or "Melta" in attacker_weapon.rules):
@@ -279,18 +279,10 @@ def shootWeapon(attacker, weapon, defender, combat_round):
 def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap shot except for Overwatch
     #choose weapon(s)
     weapons = []
-    if "Medusan Carapace" in attacker.rules:
-        if attacker.active:
-            if "Draken Scale" in defender.rules:
-                weapons.append(attacker.shooting_weapons[1]) #you can't hurt Vulkan with anything else
-            else:
-                print("Medusan Carapace: Ferrus can fire two weapons!")
-                #for my sanity; just fire the plasma blaster and heavy flamer
-                #TODO: when movement is implemented, use the graviton gun when to create difficult/dang terrain
-                weapons.append(attacker.shooting_weapons[0])
-                weapons.append(attacker.shooting_weapons[3])
-        else:
-            weapons.append(attacker.shooting_weapons[3]) #use the heavy flamer for 1d3 autohit overwatch
+    if attacker.name == "Ferrus Manus":
+        weapons.append(attacker.shooting_weapons[0])
+        weapons.append(attacker.shooting_weapons[1])
+        weapons.append(attacker.shooting_weapons[2])
     elif attacker.name == "Corvus Corax" and len(attacker.shooting_weapons) > 1: #get the two Archaeotech pistols
         weapons.append(attacker.shooting_weapons[0])
         weapons.append(attacker.shooting_weapons[1])
