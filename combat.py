@@ -301,20 +301,21 @@ def chooseAndShootWeapons(attacker, defender, combat_round):
             return True
     return False
 
-def shootingPhase(primarch1, primarch2, num_round):
+def shootingPhase(primarch1, primarch2, num_round): #primarch1 is active
     #check in combat
     if primarch1.in_combat:
         assert(primarch2.in_combat)
         print("Both primarchs locked in combat")
         return
-    #check which primarch is active
-    if primarch1.active:
-        ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
-    else:
-        ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
+    ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
     if ended:
         return ended
-    
+    #Fire back reaction
+    if primarch1.name != "Fulgrim":
+        print("%s is Firing Back!" % primarch2.name)
+        ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
+        if ended:
+            return ended
 
 ###########ASSAULT################
 
@@ -385,7 +386,7 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
             if (defender.I < 7 and defender.W <= 2) or ("Feel No Pain(4)" in defender.rules):
-                #Gladius to 1. attempt a quick kill or 2. overcome a significant FNP (Curze's psychic power) (do some math to see if it's worth it)
+                #Gladius to 1. attempt a quick kill/draw or 2. overcome a significant FNP (e.g. Curze's psychic power, Horus Ascended) (do some math to see if it's worth it)
                 attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
             else:
                 #HoD for brutal
@@ -564,7 +565,10 @@ def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
         print("###Shooting phase###")
         primarch1.handleStartOfPhase()
         primarch2.handleStartOfPhase()
-        ended = shootingPhase(primarch1, primarch2, num_round)
+        if primarch1.active:
+            ended = shootingPhase(primarch1, primarch2, num_round)
+        else:
+            ended = shootingPhase(primarch2, primarch1, num_round)
         if ended:
             return ended
         print("###End of shooting phase###")
