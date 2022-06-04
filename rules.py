@@ -6,24 +6,13 @@ from calculations import *
 from primarchs import *
 
 """
-The assumption is all rules can just function without needing external, specific info
-If specific info is needed e.g. only executes in the first round, immunity, saves,
-this can be toggled outside so the phase
-will not even add the rule in to be executed
-"""
-
-"""
 class Rule:
     def __init__(self, priority):
         self.priority = priority #this is for "supercede all other rules" rules
 
-    def exec():
+    def getStartofAssault(...):
         return
 
-class RollRule(Rule):
-    def __init__(self, priority, rolls):
-        super().__init__(priority)
-        self.rolls = rolls
 """
 #####START OF ASSAULT
 
@@ -193,7 +182,6 @@ def Fleshbane(defender, threshold):
         #So this is the funny part; unlike immunity, Preternatural Resilience is written to hijack flat rolls, as with the DG's intent to spam rad and phosphex
         #However, unlike Poison, Fleshbane has no "use strength's higher threshold"
         #Therefore, it seems Resilience should output 6+ because of its deliberate design to honeypot Fleshbane
-        #coding really brings out the need to be specific eh :) see if 40k rulings ever go to the lengths of MtG
         print("Fleshbane: Preternatural Resilience sets threshold to 6+")
         return 6
     #can just set Auric Armour to lower priority
@@ -291,7 +279,7 @@ def RendingPost(attacker, attacker_weapon, defender, woundRolls):
             print("Rending: 6 -> auto-Wound at AP2")
 
 ##############PRESAVE##############
-#note: in practice you can decide the order of wounds to save against and then roll 1-by-1, e.g. in the case of Guilliman gaining FNP for some reason against ID
+#note: One can decide the order of wounds to save against and then roll 1-by-1, e.g. in the case of Guilliman gaining FNP for some reason against ID
 #however this doesn't happen in daddy duels, so iterating to the first failed save is just as good
 
 #threshold
@@ -457,18 +445,15 @@ def CounterAttackEnd(primarch, opponent, combat_round):
 def FuriousChargeEnd(primarch, opponent, combat_round):
     if primarch.charge and "Shroud Bombs" not in opponent.rules:
         primarch.S = max(0, primarch.S - 1)
-        #print("Furious Charge: %s loses the +1S" % primarch.name)
 
 def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
     if primarch.charge:
         primarch.S = max(0, primarch.S - 1)
         primarch.I = max(1,primarch.I - 1)
-        #print("Sire of the Raven Guard: %s loses the +1S +1I" % primarch.name)
 
 ###END OF ASSAULT
 def WildfirePanoplyEnd(primarch, combat_round):
     primarch.invuln_shoot = 5
-    #print("Wildfire Panoply: %s's invuln returns to 5++" % primarch.name)
 
 def DarkFortuneRemoval(primarch, combat_round):
     primarch.rules.remove("Dark Fortune")
@@ -562,7 +547,6 @@ ShootingPreSaveDieDefenderRules = {
 ShootingPostSaveAttackerRules = {
     "Concussive": (1, Concussive), #Ferrus' Graviton Gun
     "Lethal Precision": (4, LethalPrecision),
-    #"Deflagrate": (1, Deflagrate), #hardcoded test
     "Soul Blaze": (1, SoulBlaze),
     }
 
@@ -753,8 +737,6 @@ def getEndOfAssaultRules(primarch):
             rules.append(EndOfAssaultRules[rulename])
     return rules
 
-#assume no such rule on weapons: DAMMIT
-
 def getChargeRules(primarch):
     rules = [(1,ChargeBonus)]
     for rulename in primarch.rules:
@@ -784,7 +766,6 @@ def getChargeEndRules(primarch):
         if rulename in ChargeEndRules:
             rules.append(ChargeEndRules[rulename])
     return rules
-
 
 def getEndOfCombatRules(primarch):
     rules = []

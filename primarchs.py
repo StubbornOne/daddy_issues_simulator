@@ -150,25 +150,25 @@ class Khan(Primarch):
         if mode == "Afoot":
             super().__init__("Jaghatai Khan",7,6,6,6,6,8,7,10,2,5,3, #+1A for pistol
                 [ArchaeotechPistol()],
-              [WhiteTigerDao()],
-              [
-                  "Hit and Run",
-                  #"Sire of the White Scars", #hardcoded
-                  "Wildfire Panoply",
-                  #"AUTOPASS_DANGEROUS_TERRAIN",
-              ])
+                [WhiteTigerDao()],
+                [
+                    "Hit and Run",
+                    #"Sire of the White Scars", #hardcoded
+                    "Wildfire Panoply",
+                    #"AUTOPASS_DANGEROUS_TERRAIN",
+                ])
         else:
             super().__init__("Jaghatai Khan",7,6,6,7,6,7,7,10,2,5,3,
                 [ArchaeotechPistol(), SojutsuHeavyBolter(), SojutsuHeavyBolter()], #there are two heavy bolters, but rules are quite explicit 1-rider = 1-weapon, so no point adding the 2nd bolter
-              [WhiteTigerDao()],
-              [
-                  "Hit and Run",
-                  "Sojutsu Voidbike", #"Hammer of Wrath",
-                  "Relentless",
-                  #"Sire of the White Scars",
-                  "Wildfire Panoply",
-                  #"AUTOPASS_DANGEROUS_TERRAIN",
-              ]
+                [WhiteTigerDao()],
+                [
+                    "Hit and Run",
+                    "Sojutsu Voidbike", #"Hammer of Wrath",
+                    "Relentless",
+                    #"Sire of the White Scars",
+                    "Wildfire Panoply",
+                    #"AUTOPASS_DANGEROUS_TERRAIN",
+                ]
             )
             #Unmatched Rider. Just jink for everything, it'll reset on your turn. It's possible the opponent will H&R and you'll get to Overwatch, but Overwatch was Snap Shot anyway
             self.cover = 3
@@ -179,37 +179,37 @@ class Russ(Primarch):
         super().__init__("Leman Russ",9,6,6,6,6,7,6,10,2,4,4,
             [Scornspitter()],
           [SwordOfBalenight(),AxeOfHelwinter()],
-          [
-            "Armour of Elavagar",
-            "Counter-Attack"
-            #"Night Vision", "Preternatural Senses",
-            #"Weapon Mastery"
-          ]
+            [
+                "Armour of Elavagar",
+                "Counter-Attack"
+                #"Night Vision", "Preternatural Senses",
+                #"Weapon Mastery"
+            ]
         )
 
 class Dorn(Primarch):
     def __init__(self):
         super().__init__("Rogal Dorn",8,5,6,6,6,5,4,10,2,4,4,
             [VoiceOfTerra()],
-          [StormsTeeth()],
-          [
-            "Auric Armour",
-            "Furious Charge"
-            #"Sundering Blow", #unlikely to implement; mathhammer says Sundering is always strictly worse in daddy duels
-          ]
+            [StormsTeeth()],
+            [
+                "Auric Armour",
+                "Furious Charge"
+                #"Sundering Blow", #unlikely to implement; mathhammer says Sundering is always strictly worse in daddy duels
+            ]
         )
 
 class Curze(Primarch):
     def __init__(self):
         super().__init__("Konrad Curze",8,6,6,6,6,7,6,10,2,4,4, #Paired has been added here
             [Widowmakers()],
-          [MercyAndForgiveness()],
-          [
-            #"Night Vision", "Acute Senses",
-            #"Sire of the Night Lords", #To impose Night Fighting
-            "Hit and Run",
-            "Nightmare Mantle",
-          ]
+            [MercyAndForgiveness()],
+            [
+                #"Night Vision", "Acute Senses",
+                #"Sire of the Night Lords", #To impose Night Fighting
+                "Hit and Run",
+                "Nightmare Mantle",
+            ]
         )
         self.cover = 4 #stealth, shrouded
         self.how = True
@@ -218,14 +218,14 @@ class Sanguinius(Primarch):
     def __init__(self, weapon="Encarmine"):
         super().__init__("Sanguinius",9,5,6,6,6,7,6,10,2,4,4,
             [Infernus(),
-             #FragGrenade() #Ignore until Blast is implemented, but Sang of all Primarchs may actually throw Frag. Not really. If Sang gets a shooting it's Infernus and then there's no shooting phase left (Frags can't Overwatch)
-             ],
-              [],
-              [
-                  "Sire of the Blood Angels",
-                  "Great Wings", #"Sky Strike",
-                  "Regalia Resplendent",
-              ]
+            #FragGrenade() #Ignore until Blast is implemented, but Sang of all Primarchs may actually throw Frag. Not really. If Sang gets a shooting it's Infernus and then there's no shooting phase left (Frags can't Overwatch)
+            ],
+            [],
+            [
+                "Sire of the Blood Angels",
+                "Great Wings", #"Sky Strike",
+                "Regalia Resplendent",
+            ]
         )
         self.how = True
         if weapon == "Encarmine":
@@ -236,11 +236,11 @@ class Sanguinius(Primarch):
 class Ferrus(Primarch):
     def __init__(self, weapon="Forgebreaker"):
         super().__init__("Ferrus Manus",7,6,7,7,6,5,4,10,2,3,3,
-              [PlasmaBlaster(), GravitonGun(), GrenadeHarness(), HeavyFlamer()], #RAW technically Ferrus DOESN'T have these and can't overwatch???
+            [PlasmaBlaster(), GravitonGun(), GrenadeHarness(), HeavyFlamer()], #RAW technically Ferrus DOESN'T have these and can't overwatch???
             [],
-              [
-                  "Sire of the Iron Hands", "Medusan Carapace", #"Relentless",
-              ]
+            [
+                "Sire of the Iron Hands", "Medusan Carapace", #"Relentless",
+            ]
         )
         if weapon == "Forgebreaker":
             self.melee_weapons.append(Forgebreaker_Ferrus())
@@ -252,23 +252,23 @@ class Angron(Primarch):
     def __init__(self):
         super().__init__("Angron",9,5,7,6,5,7,6,10,3,4,4,
             [SpiteFurnace()],
-          [GorefatherAndGorechild()],
-          [
-              "Hatred", "Feel No Pain",
-              #"Butcher's Nails",
-              "Furious Charge"
-          ]
+            [GorefatherAndGorechild()],
+            [
+                "Hatred", "Feel No Pain",
+                #"Butcher's Nails",
+                "Furious Charge"
+            ]
         )
 
 class Guilliman(Primarch):
     def __init__(self):
         super().__init__("Roboute Guilliman",7,6,6,6,6,6,5,10,2,4,4, #Two specialist weaps has been added here
             [Arbitrator()],
-          [GladiusIncandor(), HandOfDominion()],
-          [
-              #"Unyielding Will", "REROLL_DTW",
-              "Armour of Reason", "Preternatural Strategy", "IMMUNE_CONCUSS"
-          ]
+            [GladiusIncandor(), HandOfDominion()],
+            [
+                #"Unyielding Will", "REROLL_DTW",
+                "Armour of Reason", "Preternatural Strategy", "IMMUNE_CONCUSS"
+            ]
         )
         self.invulnreroll = False #Armour of Reason
         self.challenge_counter = -1
@@ -283,8 +283,8 @@ class Mortarion(Primarch):
             [Lantern(), PhosphexBomb()],
           [Silence()],
           [
-              #"AUTOPASS_TOUGHNESS", "AUTOPASS_DANGEROUS_TERRAIN",
-              "Preternatural Resilience"
+                #"AUTOPASS_TOUGHNESS", "AUTOPASS_DANGEROUS_TERRAIN",
+                "Preternatural Resilience"
           ]
         )
         self.rerollIWND = True
@@ -295,8 +295,8 @@ class Magnus(Primarch):
             [PsyfireSerpenta()],
           [AhnNunurta()],
           [
-              #"Eye of the Crimson King", "Infernal Bargain", "Mind Wrath", "Horned Raiment"
-              "Phantasmal Aura"
+                #"Eye of the Crimson King", "Infernal Bargain", "Mind Wrath", "Horned Raiment"
+                "Phantasmal Aura"
           ]
         )
 
@@ -306,8 +306,8 @@ class Horus(Primarch):
         [TalonGun()],
           [Talon(), Worldbreaker()],
           [
-              #"Weapon Mastery", just hardcoded based on name. need specific analysis on how to split anyway
-              "Serpent's Scales"
+                #"Weapon Mastery", just hardcoded based on name. need specific analysis on how to split anyway
+                "Serpent's Scales"
           ]
         )
     def getAttacks(self, defender, combat_round):
@@ -324,8 +324,8 @@ class Lorgar(Primarch):
             [ArchaeotechPistol()],
           [Illuminarum()],
           [
-              "Dark Fortune",
-              "Armour of the Word"
+                "Dark Fortune",
+                "Armour of the Word"
           ]
         )
 
@@ -335,7 +335,7 @@ class Vulkan(Primarch):
             [FurnacesHeart(), HeavyFlamer()],
           [Dawnbringer()],
           [
-              "Draken Scale",
+                "Draken Scale",
           ]
         )
         #Vulkan's heavy flamer is S6
@@ -349,8 +349,8 @@ class Corax(Primarch):
           [PanoplyOfTheRavenLord()],
           [
                 "Fighting Style",
-              "Sire of the Raven Guard", "Shroud Bombs", #"Shadowed Lord",
-              "Hit and Run"
+                "Sire of the Raven Guard", "Shroud Bombs", #"Shadowed Lord",
+                "Hit and Run"
           ]
         )
         if time == "Post-Isstvan":
@@ -380,13 +380,14 @@ class Alpharius(Primarch):
           [PaleSpear()],
           [
                 "Preferred Enemy",
-              "Counter-Attack", "Hammer of Wrath",
-              "Pythian Scales"
+                "Counter-Attack",
+                "Pythian Scales"
           ]
         )
         #this should be done by modifying the constructor of PlasmaBlaster
         self.shooting_weapons[0].rules.append("Master-Crafted")
         self.shooting_weapons[0].mastercrafted_rerolled = False
+        self.how = True
 
 class DummyPrimarch(Primarch):
     def __init__(self):
