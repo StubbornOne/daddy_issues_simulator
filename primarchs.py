@@ -75,6 +75,9 @@ class Primarch:
         for weapon in self.melee_weapons:
             if "Master-Crafted" in weapon.rules:
                 weapon.mastercrafted_rerolled = False
+        for weapon in self.shooting_weapons:
+            if "Master-Crafted" in weapon.rules:
+                weapon.mastercrafted_rerolled = False
 
     def handleStartOfPhase(self):
         return
