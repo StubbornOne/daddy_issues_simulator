@@ -213,6 +213,12 @@ def AuricArmour(attacker, attacker_weapon, defender, threshold):
     print("Auric Armour limits wound threshold to 4+")
     return max(threshold, 4)
 
+def RendingThreshold(num):
+    def func(attacker, attacker_weapon, defender, threshold):
+        print("Rending: %d is success" % num)
+        return min(threshold, num)
+    return func
+
 def BloodOfFire(attacker, attacker_weapon, defender, threshold):
     if "Flame" in attacker_weapon.rules or "Melta" in attacker_weapon.rules or "Plasma" in attacker_weapon.rules or "Volkite" in attacker_weapon.rules:
         print("Blood of Fire: -1 to Wound!")
@@ -281,12 +287,12 @@ def Rending(num):
     def func(attacker, attacker_weapon, defender, woundRolls):
         for woundRoll in woundRolls:
             threshold = num
-            if "Preternatural Resilience" in defender.rules:
+            if "Preternatural Resilience" in defender.rules: #not sure if considered "flat" roll
                 threshold = 6
             if woundRoll.value >= threshold:
-                woundRoll.success = True
+                #woundRoll.success = True #this is already determined by RendingThreshold
                 woundRoll.AP = min(woundRoll.AP, 2)
-                print("Rending: %s and above -> auto-Wound at AP2" % num)
+                print("Rending: %s and above -> AP2" % num)
                 #Suspicion: this isn't working as intended
     return func
 
@@ -488,6 +494,10 @@ ShootingPreWoundThresholdAttackerRules = {
 ShootingPreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
     "Blood of Fire": (1, BloodOfFire),
+    "Rending(3)": (1, RendingThreshold(3)), #.______.
+    "Rending(4)": (1, RendingThreshold(4)), #.______.
+    "Rending(5)": (1, RendingThreshold(5)), #.______.
+    "Rending(6)": (1, RendingThreshold(6)), #.______.
     }
 
 ShootingPostWoundAttackerRules = {
@@ -495,10 +505,10 @@ ShootingPostWoundAttackerRules = {
     "Murderous Strike(5)": (1, MurderousStrike(5)),
     #"Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending(3)": (3, Rending(3)), #.______.
-    "Rending(4)": (3, Rending(4)), #.______.
-    "Rending(5)": (3, Rending(5)), #.______.
-    "Rending(6)": (3, Rending(6)), #.______.
+    "Rending(3)": (1, Rending(3)), #.______.
+    "Rending(4)": (1, Rending(4)), #.______.
+    "Rending(5)": (1, Rending(5)), #.______.
+    "Rending(6)": (1, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
     }
 
@@ -590,6 +600,10 @@ MeleePreWoundThresholdAttackerRules = {
 
 MeleePreWoundThresholdDefenderRules = {
     "Auric Armour": (0, AuricArmour), #supercede
+    "Rending(3)": (1, RendingThreshold(3)), #.______.
+    "Rending(4)": (1, RendingThreshold(4)), #.______.
+    "Rending(5)": (1, RendingThreshold(5)), #.______.
+    "Rending(6)": (1, RendingThreshold(6)), #.______.
     #"Blood of Fire": (1, BloodOfFire), #Flame melee weapon...?
     }
 
@@ -600,10 +614,10 @@ MeleePostWoundAttackerRules = {
     "Murderous Strike(3)": (1, MurderousStrike(3)),
     "Force": (1, Force),
     "Instant Death": (1, InstantDeath),
-    "Rending(3)": (3, Rending(3)), #.______.
-    "Rending(4)": (3, Rending(4)), #.______.
-    "Rending(5)": (3, Rending(5)), #.______.
-    "Rending(6)": (3, Rending(6)), #.______.
+    "Rending(3)": (1, Rending(3)), #.______.
+    "Rending(4)": (1, Rending(4)), #.______.
+    "Rending(5)": (1, Rending(5)), #.______.
+    "Rending(6)": (1, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
     "Brutal(2)": (2, Brutal(2)),
     "Brutal(3)": (2, Brutal(3)),
