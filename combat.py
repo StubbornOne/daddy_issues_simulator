@@ -313,6 +313,7 @@ def shootingPhase(active_primarch, reactive_primarch, num_round):
         return ended
     if active_primarch.name != "Fulgrim": #Tactical Excellence
         #Fire back reaction
+        #TODO: active may not want to shoot and eat Fire Back if their gun sucks (Russ...)
         print("%s is Firing Back!" % reactive_primarch.name)
         ended = chooseAndShootWeapons(reactive_primarch, active_primarch, num_round)
         if ended:
@@ -498,6 +499,29 @@ def attemptHitAndRun(primarch1, primarch2):
         primarch1.in_combat = False
         primarch2.in_combat = False
 
+def chargeReaction(charging_primarch, reactive_primarch):
+    if reactive_primarch.name == "Rogal Dorn":
+        #Charge already disordered, Overwatch
+        return Overwatch
+    if reactive_primarch.name == "Leman Russ": #gun sucks vs primarchs
+        return HoldTheLine
+    if reactive_primarch.name == "Sanguinius" and reactive_primarch.shooting_weapons[0].used: #H&R cases
+        return HoldTheLine
+    #if charging_primarch.I > reactive_primarch.I and charging_primarch.W <= 1: #H&R cases, shoot and hope
+    #    return Overwatch
+    if charging_primarch.name == "Jaghatai Khan" or (charging_primarch.name == "Rogal Dorn" and reactive_primarch.T >= 7) or charging_primarch.name == "Sanguinius" or charging_primarch.name == "Angron" or charging_primarch.name == "Corvus Corax":
+        return HoldTheLine
+    return Overwatch
+
+def Overwatch(active_primarch, reactive_primarch, num_round):
+    print("%s makes Overwatch!" % reactive_primarch.name)
+    return chooseAndShootWeapons(reactive_primarch, active_primarch, num_round)
+
+def HoldTheLine(active_primarch, reactive_primarch, num_round):
+    print("%s Holds the Line!" % reactive_primarch.name)
+    active_primarch.disordered = True
+    return False
+
 def assaultPhase(active_primarch, reactive_primarch, num_round, MODE_CHARGE):
     rules1 = getStartOfAssaultRules(active_primarch)
     for rule in rules1:
@@ -515,9 +539,8 @@ def assaultPhase(active_primarch, reactive_primarch, num_round, MODE_CHARGE):
             if reactive_primarch.name == "Rogal Dorn": #Bulwark of the Imperium
                 active_primarch.disordered = True
             if active_primarch.name != "Fulgrim": #Tactical Excellence from doc leak
-                #TODO: Decide Charge reactions
-                print("%s makes Overwatch!" % reactive_primarch.name)
-                ended = chooseAndShootWeapons(reactive_primarch, active_primarch, num_round)
+                reaction = chargeReaction(active_primarch, reactive_primarch)
+                ended = reaction(active_primarch, reactive_primarch, num_round)
                 if ended:
                     return ended
         print("##End of charge subphase##")

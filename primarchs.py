@@ -18,14 +18,7 @@ class Primarch:
         #the shadow is to backup characteristics in the event of temporary changes, e.g. Blind, Concuss
         #shadow should always contain (original + permanent effects)
         #note: preternatural affects shadow_WS to handle Blind, will be reset if H&R using challenge_counter
-        self.shadow_WS = WS
-        self.shadow_BS = BS
-        self.shadow_S = S #Don't need most of these anymore
-        self.shadow_T = T
         self.shadow_W = W #for IWND
-        self.shadow_I = I
-        self.shadow_A = A
-        self.shadow_LD = LD
         self.armour = armour
         self.cover = 7
         self.how = False
@@ -43,26 +36,14 @@ class Primarch:
         self.in_combat = False #setup during duel
         self.allocated_attacks = False
 
-    def restoreWS(self):
-        self.WS = self.shadow_WS
-    def restoreBS(self):
-        self.BS = self.shadow_BS
-    def restoreS(self):
-        self.S = self.shadow_S
-    def restoreT(self):
-        self.T = self.shadow_T
-    def restoreI(self):
-        self.I = self.shadow_I
-    def restoreA(self):
-        self.A = self.shadow_A
-    def restoreLD(self):
-        self.LD = self.shadow_LD
-
     def getAttacks(self, defender, combat_round):
         return self.A
 
     def handleStartOfTurn(self):
         for weapon in self.melee_weapons:
+            if "Master-Crafted" in weapon.rules:
+                weapon.mastercrafted_rerolled = False
+        for weapon in self.shooting_weapons:
             if "Master-Crafted" in weapon.rules:
                 weapon.mastercrafted_rerolled = False
 
@@ -166,7 +147,7 @@ class Russ(Primarch):
             [Scornspitter()],
           [SwordOfBalenight(),AxeOfHelwinter()],
           [
-            "Furious Charge(1)", #It's technically Sire of the SW...
+            "Sire of the Space Wolves",
             "Armour of Elavagar",
             "Counter-Attack(2)"
             #"Night Vision", "Preternatural Senses",
@@ -392,13 +373,13 @@ class Alpharius(Primarch):
             self.rules.remove("Preferred Enemy")
         if "Sudden Strike(1)" in self.rules:
             self.rules.remove("Sudden Strike(1)")
-        #TODO: There is more nuance to when to pop either
-        if not self.usedPreferredEnemy:
-            self.rules.append("Preferred Enemy")
-            self.usedPreferredEnemy = True
-        elif not self.usedSuddenStrike:
+        if not self.usedSuddenStrike and self.active and not self.in_combat: #Planning to charge, the only time to use Sudden Strike
             self.rules.append("Sudden Strike(1)")
             self.usedSuddenStrike = True
+        elif not self.usedPreferredEnemy: #Just use ASAP
+            self.rules.append("Preferred Enemy")
+            self.usedPreferredEnemy = True
+        
 
 class DummyPrimarch(Primarch):
     def __init__(self):

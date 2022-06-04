@@ -69,6 +69,11 @@ def FlawlessExecution(primarch, defender, combat_round):
         primarch.I = primarch.I + num
         print("Flawless Execution: %s gains +%dI!" % (primarch.name, num))
 
+def SireOfTheSpaceWolves(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.WS = min(10, primarch.S + 1)
+        print("Sire of the Space Wolves: %s gains +1S!" % primarch.name)
+
 def SireOfTheBloodAngels(primarch, defender, combat_round):
     if primarch.charge:
         primarch.WS = min(10, primarch.WS + 1)
@@ -436,6 +441,10 @@ def SuddenStrikeEnd(num):
             primarch.I = primarch.I - num
     return func
 
+def SireOfTheSpaceWolvesEnd(primarch, defender, combat_round):
+    if primarch.charge:
+        primarch.WS = max(0, primarch.S - 1)
+
 def SireOfTheBloodAngelsEnd(primarch, defender, combat_round):
     if primarch.charge:
         primarch.WS = max(0, primarch.WS - 1)
@@ -704,6 +713,7 @@ ChargeRules = {
     "Legiones Astartes (World Eaters)": (1, LA_WE),
     "Furious Charge(1)": (1, FuriousCharge(1)), #.___.
     "Furious Charge(2)": (1, FuriousCharge(2)), #.___.
+    "Sire of the Space Wolves": (1, SireOfTheSpaceWolves),
     "Sire of the Blood Angels": (1, SireOfTheBloodAngels),
     "Counter-Attack(1)": (1,CounterAttack(1)),
     "Counter-Attack(2)": (1,CounterAttack(2)),
@@ -726,6 +736,7 @@ ChargeEndRules = {
     "Legiones Astartes (World Eaters)": (1, LA_WEEnd),
     "Furious Charge(1)": (1, FuriousChargeEnd(1)),
     "Furious Charge(2)": (1, FuriousChargeEnd(2)),
+    "Sire of the Space Wolves": (1, SireOfTheSpaceWolvesEnd),
     "Sire of the Blood Angels": (1, SireOfTheBloodAngelsEnd),
     "Counter-Attack(1)": (1,CounterAttackEnd(1)),
     "Counter-Attack(2)": (1,CounterAttackEnd(2)),
