@@ -37,9 +37,9 @@ class Primarch:
         self.rules = rules  #misc combat-relevant rules
 
         #temporary values
-        #counter, substracts every End-Of-Assault-Phase (including the turn concussing turn)
         self.active = False #not your turn
         self.charge = False
+        self.disordered = False
         self.in_combat = False #setup during duel
         self.allocated_attacks = False
 

@@ -27,7 +27,7 @@ def WildfirePanoplyStart(primarch, defender, combat_round):
 #####START OF COMBAT: CHARGE
 
 def ChargeBonus(primarch, defender, combat_round):
-    if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+    if primarch.charge and not primarch.disordered:
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
@@ -45,21 +45,21 @@ def CounterAttack(num):
 
 def FuriousCharge(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
+        if primarch.charge and not primarch.disordered: #assume this is the case
             primarch.S = primarch.S + num
             print("Furious Charge: %s gains +%dS!" % (primarch.name, num))
     return func
 
 def Rage(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
+        if primarch.charge and not primarch.disordered: #assume this is the case
             primarch.A = primarch.A + num
             print("Rage: %s gains +%dA!" % (primarch.name, num))
     return func
 
 def SuddenStrike(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
+        if primarch.charge and not primarch.disordered: #assume this is the case
             primarch.I = primarch.I + num
             print("Sudden Strike: %s gains +%dI!" % (primarch.name, num))
     return func
@@ -401,7 +401,7 @@ def DuellistsEdgeEnd(num):
     return func
 
 def ChargeBonusEnd(primarch, defender, combat_round):
-    if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
+    if primarch.charge and not primarch.disordered:
         primarch.A -= 1
 
 def LA_WEEnd(primarch, defender, combat_round):
@@ -416,13 +416,13 @@ def CounterAttackEnd(num):
 
 def FuriousChargeEnd(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+        if primarch.charge and not primarch.disordered:
             primarch.S = max(0, primarch.S - num) #I don't think we need the max safety anymore
     return func
 
 def RageEnd(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+        if primarch.charge and not primarch.disordered:
             primarch.A = primarch.A - num
     return func
 
@@ -432,7 +432,7 @@ def FlawlessExecutionEnd(primarch, defender, combat_round):
 
 def SuddenStrikeEnd(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+        if primarch.charge and not primarch.disordered:
             primarch.I = primarch.I - num
     return func
 

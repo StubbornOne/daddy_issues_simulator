@@ -307,11 +307,12 @@ def shootingPhase(primarch1, primarch2, num_round): #primarch1 is active
         assert(primarch2.in_combat)
         print("Both primarchs locked in combat")
         return
+    #Evade reaction will not be implemented because it's not stackable with other Shroudeds and every daddy has an equiv or better Invuln
     ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
     if ended:
         return ended
     #Fire back reaction
-    if primarch1.name != "Fulgrim":
+    if primarch1.name != "Fulgrim": #Tactical Excellence
         print("%s is Firing Back!" % primarch2.name)
         ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
         if ended:
@@ -509,10 +510,12 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
         print("##Start of charge subphase##")
         if not primarch1.in_combat: #primarch2 should not be in combat either
             if primarch1.active:
-                #TODO: Decide Charge reactions
                 primarch1.charge = True
                 print("%s is charging!" % primarch1.name)
+                if primarch2.name == "Rogal Dorn": #Bulwark of the Imperium
+                    primarch1.disordered = True
                 if primarch1.name != "Fulgrim": #Tactical Excellence from doc leak
+                    #TODO: Decide Charge reactions
                     print("%s makes Overwatch!" % primarch2.name)
                     ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
                     if ended:
@@ -520,6 +523,8 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
             else: #primarch2 should be active
                 primarch2.charge = True
                 print("%s is charging!" % primarch2.name)
+                if primarch1.name == "Rogal Dorn": #Bulwark of the Imperium
+                    primarch2.disordered = True
                 if primarch2.name != "Fulgrim": #Tactical Excellence from doc leak
                     print("%s makes Overwatch!" % primarch1.name)
                     ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
@@ -538,7 +543,9 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
     
     if MODE_CHARGE:
         primarch1.charge = False
+        primarch1.disordered = False
         primarch2.charge = False
+        primarch2.disordered = False
 
     rules1 = getEndOfAssaultRules(primarch1)
     for rule in rules1:
