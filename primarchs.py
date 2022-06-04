@@ -20,7 +20,7 @@ class Primarch:
         #note: preternatural affects shadow_WS to handle Blind, will be reset if H&R using challenge_counter
         self.shadow_WS = WS
         self.shadow_BS = BS
-        self.shadow_S = S
+        self.shadow_S = S #Don't need most of these anymore
         self.shadow_T = T
         self.shadow_W = W #for IWND
         self.shadow_I = I
@@ -38,7 +38,6 @@ class Primarch:
 
         #temporary values
         #counter, substracts every End-Of-Assault-Phase (including the turn concussing turn)
-        self.underConcuss = 0
         self.active = False #not your turn
         self.charge = False
         self.in_combat = False #setup during duel
@@ -53,8 +52,7 @@ class Primarch:
     def restoreT(self):
         self.T = self.shadow_T
     def restoreI(self):
-        if self.underConcuss <= 0 and not self.underStasis:
-            self.I = self.shadow_I
+        self.I = self.shadow_I
     def restoreA(self):
         self.A = self.shadow_A
     def restoreLD(self):
@@ -144,7 +142,7 @@ class Khan(Primarch):
               [WhiteTigerDao()],
               [
                   "Hit and Run",
-                  "Furious Charge(3)", #assume supposed to be cumulative with the Dao...
+                  "Furious Charge(1)",
                   "Wildfire Panoply",
               ])
         else:
@@ -218,7 +216,6 @@ class Sanguinius(Primarch):
         #self.how = True #?
         if weapon == "Encarmine":
             self.melee_weapons.append(BladeEncarmine())
-            self.rules.append("Rage(2)")
         else:
             self.melee_weapons.append(SpearOfTelesto())
             self.melee_weapons.append(MoonsilverBlade())
@@ -465,5 +462,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  #"Lion_Blade", "Fulgrim_Fireblade", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
+                  "Lion_Blade", "Fulgrim_Fireblade", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
                   ]

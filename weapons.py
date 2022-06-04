@@ -98,7 +98,7 @@ class WhiteTigerDao(MeleeWeapon):
     "White Tiger Dao",
     lambda s: s+1,
     2,
-    ["Master-Crafted", "Duellist's Edge(1)", "Murderous Strike(5)", "Furious Charge(2)"] #assume this only applies to the Dao's attacks thus excluding HoW. TODO: Fix it, still affects HoW
+    ["Master-Crafted", "Duellist's Edge(1)", "Murderous Strike(5)", "Furious Charge(2)"] #Not sure if it's supposed to only benefit this weapon
     )
 
 class SwordOfBalenight(MeleeWeapon):
@@ -143,7 +143,7 @@ class BladeEncarmine(MeleeWeapon):
     "Blade Encarmine",
     lambda s: s+1,
     2,
-    ["Master-Crafted", "Shred", "Murderous Strike(5)"] #No idea what Rage(2) is...
+    ["Master-Crafted", "Shred", "Murderous Strike(5)", "Rage(2)"]
     )
 
 class SpearOfTelesto(MeleeWeapon):

@@ -7,7 +7,7 @@ from calculations import *
 
 ####Actual rolling
 def isDefeated(primarch):
-    return primarch.W <= 0 or primarch.S <= 0 or primarch.T <= 0
+    return primarch.W <= 0 #or primarch.S <= 0 or primarch.T <= 0 #no more
 
 def resolveHits(attacker, attacker_weapon, defender, combat_round, numAttacks, attackType):
     if "Template" in attacker_weapon.rules:
@@ -445,7 +445,7 @@ def fightSubPhase(primarch1, primarch2, combat_round, MODE_CHARGE):
     initiative_queue = [[] for i in range(11)]
 
     #now traverse the initiative queue to resolve attacks
-    i = 10 #Now obsolete priority
+    i = 10 #Need more?
     while i >= 0:
         if attackAtThisInitiative(primarch1, i) and not primarch1.allocated_attacks:
             numattacks1 = primarch1.getAttacks(primarch2, combat_round)
@@ -511,7 +511,7 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
                 #TODO: Decide Charge reactions
                 primarch1.charge = True
                 print("%s is charging!" % primarch1.name)
-                if primarch1.name != "Fulgrim":
+                if primarch1.name != "Fulgrim": #Tactical Excellence from doc leak
                     print("%s makes Overwatch!" % primarch2.name)
                     ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
                     if ended:
@@ -519,7 +519,7 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
             else: #primarch2 should be active
                 primarch2.charge = True
                 print("%s is charging!" % primarch2.name)
-                if primarch2.name != "Fulgrim":
+                if primarch2.name != "Fulgrim": #Tactical Excellence from doc leak
                     print("%s makes Overwatch!" % primarch1.name)
                     ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
                     if ended:
