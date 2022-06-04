@@ -59,20 +59,20 @@ class WolfBlade(MeleeWeapon):
 class Fireblade(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Fireblade",
-                lambda s: s+1,
-                    2,
-                    ["Master-Crafted", "Murderous Strike (5+)"],
-                    )
+            "Fireblade",
+            lambda s: s+1,
+            2,
+            ["Master-Crafted", "Murderous Strike(5)"],
+        )
 
 class LaerBlade(MeleeWeapon):
     def __init__(self):
         super().__init__(
-    "Blade of the Laer",
-                    lambda s: s,
-                    2,
-                    ["Rending"]
-                    )
+            "Blade of the Laer",
+            lambda s: s,
+            2,
+            ["Duellist's Edge(1)","Fleshbane"]
+        )
 
 class Logos_Melee(MeleeWeapon):
     def __init__(self):
@@ -143,7 +143,7 @@ class BladeEncarmine(MeleeWeapon):
     "Blade Encarmine",
     lambda s: s+1,
     2,
-    ["Master-Crafted", "Shred", "Rage(2)", "Murderous Strike(5)"] #No idea what Rage(2) is...
+    ["Master-Crafted", "Shred", "Murderous Strike(5)"] #No idea what Rage(2) is...
     )
 
 class SpearOfTelesto(MeleeWeapon):
@@ -269,7 +269,7 @@ class PanoplyOfTheRavenLord(MeleeWeapon):
     "Panoply of the Raven Lord",
     lambda s: s,
     2,
-    ["Shred", "Murderous Strike(4)"]
+    ["Shred"]
     )
 
 class PaleSpear(MeleeWeapon):
@@ -345,12 +345,12 @@ class Firebrand(ShootingWeapon):
     def __init__(self):
         super().__init__(
             "Firebrand",
-            lambda s: 5,
-            5,
+            lambda s: 6,
+            4,
             15,
-            "Assault",
+            "Pistol",
             "2",
-            ["Master-Crafted", "Deflagrate", "Volkite"]
+            ["Master-Crafted", "Deflagrate", "Shred", "Volkite"]
         )
 
 class KrakGrenade(ShootingWeapon):

@@ -6,13 +6,6 @@ from calculations import *
 from primarchs import *
 
 """
-The assumption is all rules can just function without needing external, specific info
-If specific info is needed e.g. only executes in the first round, immunity, saves,
-this can be toggled outside so the phase
-will not even add the rule in to be executed
-"""
-
-"""
 class Rule:
     def __init__(self, priority):
         self.priority = priority #this is for "supercede all other rules" rules
@@ -27,14 +20,14 @@ class RollRule(Rule):
 """
 #####START OF ASSAULT
 
-def WildfirePanoplyStart(primarch, combat_round):
+def WildfirePanoplyStart(primarch, defender, combat_round):
     primarch.invuln_shoot = 3
     print("Wildfire Panoply: %s's invuln grows to 3++!" % primarch.name)
 
 #####START OF COMBAT: CHARGE
 
 def ChargeBonus(primarch, defender, combat_round):
-    if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
+    if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
         primarch.A += 1
         print("%s gets +1A for the charge!" % primarch.name)
 
@@ -57,11 +50,24 @@ def FuriousCharge(num):
             print("Furious Charge: %s gains +%dS!" % (primarch.name, num))
     return func
 
-def SireOfTheRavenGuard(primarch, defender, combat_round):
+def Rage(num):
+    def func(primarch, defender, combat_round):
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
+            primarch.A = primarch.A + num
+            print("Rage: %s gains +%dA!" % (primarch.name, num))
+    return func
+
+def SuddenStrike(num):
+    def func(primarch, defender, combat_round):
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules: #assume this is the case
+            primarch.I = primarch.I + num
+            print("Sudden Strike: %s gains +%dI!" % (primarch.name, num))
+    return func
+
+def FlawlessExecution(primarch, defender, combat_round):
     if primarch.charge:
-        primarch.S = min(10, primarch.S + 1)
-        primarch.I = min(10, primarch.I + 1)
-        print("Sire of the Raven Guard: %s gains +1S +1I!" % primarch.name)
+        primarch.I = primarch.I + num
+        print("Flawless Execution: %s gains +%dI!" % (primarch.name, num))
 
 def SireOfTheBloodAngels(primarch, defender, combat_round):
     if primarch.charge:
@@ -71,10 +77,18 @@ def SireOfTheBloodAngels(primarch, defender, combat_round):
 #####START OF COMBAT
 
 def FightingStyle(primarch, defender, combat_round):
+    if primarch.active and not primarch.in_combat:
+        #gonna charge
+        if (primarch.I <= defender.I and defender.W <= 2): #try to kill off at faster Init
+            primarch.rules.append("Sudden Strike(3)")
+        else:
+            primarch.rules.append("Rage(4)")
+    else:
+        primarch.rules.append("Murderous Strike(4)")
     return
 
 #technically it should be during attack selection?
-#also: does this actually modify the Init value? People assume so, but DEdge says "score" and RB says "fights at -1 Init", not change the value
+#also: does this actually modify the Init value? DEdge says "score" and RB says "fights at -1 Init", not change the value
 def DuellistsEdgeStart(num):
     def func(primarch, defender, combat_round):
         primarch.I = min(10, primarch.I + num)
@@ -159,7 +173,7 @@ def LA_IF(attacker, defender, threshold):
 
 def BurstD6(attacker, attacker_weapon, defender, hitRolls):
     #assume only one roll in hitRolls
-    if hitRolls[0].success:
+    if len(hitRolls) > 0 and hitRolls[0].success:
         mult = roll()
         print("Burst(D6): %s hits!" % mult)
         for i in range(1,mult):
@@ -180,7 +194,6 @@ def Fleshbane(attacker, attacker_weapon, defender, threshold):
         #So this is the funny part; unlike immunity, Preternatural Resilience is written to hijack flat rolls, as with the DG's intent to spam rad and phosphex
         #However, unlike Poison, Fleshbane has no "use strength's higher threshold"
         #Therefore, it seems Resilience should output 6+ because of its deliberate design to honeypot Fleshbane
-        #coding really brings out the need to be specific eh :) see if 40k rulings ever go to the lengths of MtG
         print("Fleshbane: Preternatural Resilience sets threshold to 6+")
         return 6
     #can just set Auric Armour to lower priority
@@ -236,6 +249,21 @@ def MurderousStrike(num):
             if woundRoll.value >= num:
                 print("Murderous Strike: %d has Instant Death" % woundRoll.value)
                 woundRoll.effects.append("Instant Death")
+    return func
+
+def Brutal(num):
+    def func(attacker, attacker_weapon, defender, woundRolls):
+        new_woundRolls = []
+        for woundRoll in woundRolls:
+            if woundRoll.success == True:
+                print("Brutal: w%d results in %d wounds!" % (woundRoll.value, num))
+                for i in range(1,num):
+                    new_woundRoll = WoundDie(woundRoll.value,attacker_weapon.AP)
+                    new_woundRoll.success = True
+                    new_woundRoll.evaluated = True
+                    #clone the effects over?
+                    new_woundRolls.append(new_woundRoll)
+        woundRolls.extend(new_woundRolls)
     return func
 
 #If psychic is added, then force needs to check for toggle
@@ -327,38 +355,6 @@ def reduceWounds(attacker, attacker_weapon, defender, woundRolls, saveRolls):
         if not saveRolls[i].success:
             defender.W -= 1
 
-#Strikedown no longer halves Init by HH rulebook (but still forces attacks at Init 1 if charge, todo)
-"""
-def Strikedown(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    #at least one wound, saved or not
-    if len(woundRolls) > 0:
-        print("Applying Strikedown")
-        if "Serpent's Scales" in defender.rules:
-            if SerpentScalesSave():
-                print("Strikedown: saved!")
-                return #done, Strikedown triggers once for "one or more Wounds"
-        #this exploits that only concussive and strikedown reduce I
-        new_I = min(defender.I, (defender.shadow_I + 1) // 2)
-        print("Strikedown: %s is struck down!" % defender.name)
-        defender.I = new_I #immediately apply effect
-        defender.underStrikedown = True
-"""
-
-def Concussive(attacker, attacker_weapon, defender, woundRolls, saveRolls):
-    if "IMMUNE_CONCUSS" in defender.rules:
-        #print("Concussive: %s is immune to Concussive" % defender.name)
-        return
-    for i in range(len(saveRolls)):
-        if not saveRolls[i].success:
-            if "Serpent's Scales" in defender.rules:
-                if SerpentScalesSave():
-                    print("Concussive: saved!")
-                    return #done, Concuss triggers once for "one or more Wounds"
-            defender.I = 1 #immediately apply effect
-            defender.underConcuss = 2 #subtract 1 end of this assault phase; subtract 1 end of next assault phase and restore
-            print("Concussive: %s is concussed!" % defender.name)
-            break #just one is enough
-
 def Moonsilver(attacker, attacker_weapon, defender, woundRolls, saveRolls):
     #check for 'Psyker' done in combat.py
     new_woundRolls = []
@@ -414,24 +410,42 @@ def CounterAttackEnd(num):
 
 def FuriousChargeEnd(num):
     def func(primarch, defender, combat_round):
-        if primarch.charge and "Bulwark of the Imperium" not in defender.rules and "Shroud Bombs" not in defender.rules:
-            primarch.S = max(0, primarch.S - num)
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+            primarch.S = max(0, primarch.S - num) #I don't think we need the max safety anymore
     return func
 
-def SireOfTheRavenGuardEnd(primarch, defender, combat_round):
+def RageEnd(num):
+    def func(primarch, defender, combat_round):
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+            primarch.A = primarch.A - num
+    return func
+
+def FlawlessExecutionEnd(primarch, defender, combat_round):
     if primarch.charge:
-        primarch.S = max(0, primarch.S - 1)
-        primarch.I = max(1,primarch.I - 1)
-        #print("Sire of the Raven Guard: %s loses the +1S +1I" % primarch.name)
+        primarch.I = primarch.I - num
+
+def SuddenStrikeEnd(num):
+    def func(primarch, defender, combat_round):
+        if primarch.charge and "Bulwark of the Imperium" not in defender.rules:
+            primarch.I = primarch.I - num
+    return func
 
 def SireOfTheBloodAngelsEnd(primarch, defender, combat_round):
     if primarch.charge:
         primarch.WS = max(0, primarch.WS - 1)
 
 ###END OF ASSAULT
-def WildfirePanoplyEnd(primarch, combat_round):
+def WildfirePanoplyEnd(primarch, defender, combat_round):
     primarch.invuln_shoot = 5
     #print("Wildfire Panoply: %s's invuln returns to 5++" % primarch.name)
+
+def FightingStyleEnd(primarch, defender, combat_round):
+    if "Sudden Strike(3)" in primarch.rules:
+        primarch.rules.remove("Sudden Strike(3)")
+    elif "Rage(4)" in primarch.rules:
+        primarch.rules.remove("Rage(4)")
+    elif "Murderous Strike(4)" in primarch.rules:
+        primarch.rules.remove("Murderous Strike(4)")
 
 ###############################RULE CATEGORIES###############################
 
@@ -591,8 +605,8 @@ MeleePostWoundAttackerRules = {
     "Rending(5)": (3, Rending(5)), #.______.
     "Rending(6)": (3, Rending(6)), #.______.
     "Breaching(4)": (1, Breaching(4)), #.______.
-    #"Brutal(2)": (2, Brutal(2)),
-    #"Brutal(3)": (2, Brutal(3)),
+    "Brutal(2)": (2, Brutal(2)),
+    "Brutal(3)": (2, Brutal(3)),
     }
 
 MeleePostWoundDefenderRules = {
@@ -669,20 +683,24 @@ rules_categories = {
 
 StartOfAssaultRules = {
     "Wildfire Panoply": (1, WildfirePanoplyStart),
+    "Fighting Style": (1, FightingStyle),
     }
 
 ChargeRules = {
     "Legiones Astartes (World Eaters)": (1, LA_WE),
     "Furious Charge(1)": (1, FuriousCharge(1)), #.___.
     "Furious Charge(2)": (1, FuriousCharge(2)), #.___.
-    "Sire of the Raven Guard": (1, SireOfTheRavenGuard),
     "Sire of the Blood Angels": (1, SireOfTheBloodAngels),
     "Counter-Attack(1)": (1,CounterAttack(1)),
     "Counter-Attack(2)": (1,CounterAttack(2)),
+    "Rage(2)": (1, Rage(2)),
+    "Rage(4)": (1, Rage(4)),
+    "Sudden Strike(1)": (1, SuddenStrike(1)),
+    "Sudden Strike(3)": (1, SuddenStrike(3)),
+    "Flawless Execution": (1, FlawlessExecution),
     }
 
 StartOfCombatRules = {
-    "Fighting Style": (1, FightingStyle),
     "Duellist's Edge(1)": (1,DuellistsEdgeStart(1)),
     }
 
@@ -694,14 +712,19 @@ ChargeEndRules = {
     "Legiones Astartes (World Eaters)": (1, LA_WEEnd),
     "Furious Charge(1)": (1, FuriousChargeEnd(1)),
     "Furious Charge(2)": (1, FuriousChargeEnd(2)),
-    "Sire of the Raven Guard": (1, SireOfTheRavenGuardEnd),
     "Sire of the Blood Angels": (1, SireOfTheBloodAngelsEnd),
     "Counter-Attack(1)": (1,CounterAttackEnd(1)),
     "Counter-Attack(2)": (1,CounterAttackEnd(2)),
+    "Rage(2)": (1, RageEnd(2)),
+    "Rage(4)": (1, RageEnd(4)),
+    "Sudden Strike(1)": (1, SuddenStrikeEnd(1)),
+    "Sudden Strike(3)": (1, SuddenStrikeEnd(3)),
+    "Flawless Execution": (1, FlawlessExecutionEnd),
     }
 
 EndOfAssaultRules = {
     "Wildfire Panoply": (1, WildfirePanoplyEnd),
+    "Fighting Style": (1, FightingStyleEnd),
     }
 
 def getStartOfAssaultRules(primarch):

@@ -102,18 +102,18 @@ class Lion(Primarch):
         return self.A
 
 class Fulgrim(Primarch):
-    def __init__(self, weapon="Fireblade", childofterra=True):
-        super().__init__("Fulgrim", 8,6,6,6,6,8,5,10,2,5,3, #sublime swordsman hardcoded
+    def __init__(self, weapon="Laer"):
+        super().__init__("Fulgrim", 8,6,6,6,6,8,6,10,2,5,3, #sublime swordsman hardcoded
             [Firebrand(), KrakGrenade()], #krak is 8" so dubious to throw, stick to Firebrand
             [],
-            ["Gilded Panoply"]
+            [
+                "Sudden Strike(1)",
+            ]
         )
         if weapon == "Fireblade":
             self.melee_weapons.append(Fireblade())
         else:
             self.melee_weapons.append(LaerBlade())
-        if childofterra:
-            self.rules.append("Child of Terra")
 
     def getAttacks(self, defender, combat_round):
         if self.I > defender.I:
@@ -218,6 +218,7 @@ class Sanguinius(Primarch):
         #self.how = True #?
         if weapon == "Encarmine":
             self.melee_weapons.append(BladeEncarmine())
+            self.rules.append("Rage(2)")
         else:
             self.melee_weapons.append(SpearOfTelesto())
             self.melee_weapons.append(MoonsilverBlade())
@@ -368,7 +369,7 @@ class Corax(Primarch):
             [PanoplyOfTheRavenLord()],
             [
                 #"Legiones Astartes (Raven Guard)", #which choice???
-                #"Fighting Style", #don't know Rage(x) and Sudden Strike(x) yet, so assume Murderous Strike
+                "Fighting Style",
                 "Hit and Run",
                 #"Shadowed Lord", #given the way we H&R, this will never come into play
             ]
@@ -449,8 +450,8 @@ def createPrimarchFromName(name):
         return Alpharius()
     elif name == "Lion_Blade":
         return Lion("Wolf Blade")
-    elif name == "Fulgrim_Laer":
-        return Fulgrim("Blade of the Laer")
+    elif name == "Fulgrim_Fireblade":
+        return Fulgrim("Fireblade")
     elif name == "Perturabo_Fists":
         return Perturabo("Fists")
     elif name == "Khan_Afoot":
@@ -464,5 +465,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Blade", "Fulgrim_Laer", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
+                  #"Lion_Blade", "Fulgrim_Fireblade", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
                   ]

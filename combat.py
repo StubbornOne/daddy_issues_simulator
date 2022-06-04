@@ -5,9 +5,6 @@ from calculations import *
 
 ####AI stuff
 
-def needToConcuss(defender):
-    return defender.name == "Fulgrim" or ("Hit and Run" in defender.rules and not defender.active)
-
 ####Actual rolling
 def isDefeated(primarch):
     return primarch.W <= 0 or primarch.S <= 0 or primarch.T <= 0
@@ -280,7 +277,7 @@ def shootWeapon(attacker, weapon, defender, combat_round):
             resolveSaves(attacker, weapon, defender, combat_round, woundRolls, "Shooting")
     return
 
-def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap shot except for Overwatch
+def chooseAndShootWeapons(attacker, defender, combat_round):
     #choose weapon(s)
     weapons = []
     if attacker.name == "Ferrus Manus": #assume this is what Firing Protocols do
@@ -384,6 +381,8 @@ def allocateAttacks(attacker, defender, numAttacks, combat_round):
             if defender.psyker:
                 #use Moonsilver
                 attacks.append([attacker, attacker.melee_weapons[1], defender, combat_round, numAttacks])
+            else:
+                attacks.append([attacker, attacker.melee_weapons[0], defender, combat_round, numAttacks])
         elif attacker.name == "Roboute Guilliman":
             if (defender.I < 7 and defender.W <= 2) or ("Feel No Pain(4)" in defender.rules):
                 #Gladius to 1. attempt a quick kill or 2. overcome a significant FNP (Curze's psychic power) (do some math to see if it's worth it)
@@ -499,29 +498,32 @@ def attemptHitAndRun(primarch1, primarch2):
 def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
     rules1 = getStartOfAssaultRules(primarch1)
     for rule in rules1:
-        rule[1](primarch1, num_round)
+        rule[1](primarch1, primarch2, num_round)
     rules2 = getStartOfAssaultRules(primarch2)
     for rule in rules2:
-        rule[1](primarch2, num_round)
+        rule[1](primarch2, primarch1, num_round)
 
     #Charge!
     if MODE_CHARGE:
         print("##Start of charge subphase##")
         if not primarch1.in_combat: #primarch2 should not be in combat either
             if primarch1.active:
+                #TODO: Decide Charge reactions
                 primarch1.charge = True
                 print("%s is charging!" % primarch1.name)
-                print("%s makes Overwatch!" % primarch2.name)
-                ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
-                if ended:
-                    return ended
+                if primarch1.name != "Fulgrim":
+                    print("%s makes Overwatch!" % primarch2.name)
+                    ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
+                    if ended:
+                        return ended
             else: #primarch2 should be active
                 primarch2.charge = True
                 print("%s is charging!" % primarch2.name)
-                print("%s makes Overwatch!" % primarch1.name)
-                ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
-                if ended:
-                    return ended
+                if primarch2.name != "Fulgrim":
+                    print("%s makes Overwatch!" % primarch1.name)
+                    ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
+                    if ended:
+                        return ended
         print("##End of charge subphase##")
     #always assume charge success, so
     primarch1.in_combat = True
@@ -531,30 +533,18 @@ def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
     if ended:
         return ended
     print("#End of fight subphase#")
-    #none of these really has an ordering
+    #none of these really have an ordering
     
-    #handle Concuss
-    if primarch1.underConcuss > 0:
-        primarch1.underConcuss = primarch1.underConcuss - 1
-        if primarch1.underConcuss == 0:
-            print("%s is no longer concussed" % (primarch1.name))
-            primarch1.restoreI()
-    if primarch2.underConcuss > 0:
-        primarch2.underConcuss = primarch2.underConcuss - 1
-        if primarch2.underConcuss == 0:
-            print("%s is no longer concussed" % (primarch2.name))
-            primarch2.restoreI()
-
     if MODE_CHARGE:
-            primarch1.charge = False
-            primarch2.charge = False
+        primarch1.charge = False
+        primarch2.charge = False
 
     rules1 = getEndOfAssaultRules(primarch1)
     for rule in rules1:
-        rule[1](primarch1, num_round)
+        rule[1](primarch1, primarch2, num_round)
     rules2 = getEndOfAssaultRules(primarch2)
     for rule in rules2:
-        rule[1](primarch2, num_round)
+        rule[1](primarch2, primarch1, num_round)
 
     #Hit and Run
     if MODE_CHARGE:
