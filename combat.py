@@ -346,25 +346,23 @@ def chooseAndShootWeapons(attacker, defender, combat_round): #nobody will snap s
             return True
     return False
 
-def shootingPhase(primarch1, primarch2, num_round):
+def shootingPhase(active_primarch, reactive_primarch, num_round):
     #check in combat
-    if primarch1.in_combat:
-        assert(primarch2.in_combat)
+    if active_primarch.in_combat:
+        assert(reactive_primarch.in_combat)
         print("Both primarchs locked in combat")
-        return
+        return False
     #check which primarch is active
-    if primarch1.active:
-        ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
-    else:
-        ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
+    ended = chooseAndShootWeapons(active_primarch, reactive_primarch, num_round)
     if ended:
         return ended
     
     #Blind tests
-    if primarch1.takeBlindTest:
-        BlindTest(primarch1)
-    if primarch2.takeBlindTest:
-        BlindTest(primarch2)
+    if active_primarch.takeBlindTest:
+        BlindTest(active_primarch)
+    if reactive_primarch.takeBlindTest:
+        BlindTest(reactive_primarch)
+    return False
 
 ###########ASSAULT################
 
@@ -563,78 +561,68 @@ def attemptHitAndRun(primarch1, primarch2):
         if "Preternatural Strategy" in primarch2.rules:
             PreternaturalStrategyReset(primarch2)
 
-def assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE):
-    rules1 = getStartOfAssaultRules(primarch1)
+def assaultPhase(active_primarch, reactive_primarch, num_round, MODE_CHARGE):
+    rules1 = getStartOfAssaultRules(active_primarch)
     for rule in rules1:
-        rule[1](primarch1, num_round)
-    rules2 = getStartOfAssaultRules(primarch2)
+        rule[1](active_primarch, num_round)
+    rules2 = getStartOfAssaultRules(reactive_primarch)
     for rule in rules2:
-        rule[1](primarch2, num_round)
+        rule[1](reactive_primarch, num_round)
 
     #Charge!
     if MODE_CHARGE:
         print("##Start of charge subphase##")
-        if not primarch1.in_combat: #primarch2 should not be in combat either
-            if primarch1.active:
-                primarch1.charge = True
-                print("%s is charging!" % primarch1.name)
-                print("%s makes Overwatch!" % primarch2.name)
-                ended = chooseAndShootWeapons(primarch2, primarch1, num_round)
-                if ended:
-                    return ended
-            else: #primarch2 should be active
-                primarch2.charge = True
-                print("%s is charging!" % primarch2.name)
-                print("%s makes Overwatch!" % primarch1.name)
-                ended = chooseAndShootWeapons(primarch1, primarch2, num_round)
-                if ended:
-                    return ended
+        if not active_primarch.in_combat: #primarch2 should not be in combat either
+            active_primarch.charge = True
+            print("%s is charging!" % active_primarch.name)
+            print("%s makes Overwatch!" % reactive_primarch.name)
+            ended = chooseAndShootWeapons(reactive_primarch, active_primarch, num_round)
+            if ended:
+                return ended
         print("##End of charge subphase##")
     #always assume charge success, so
-    primarch1.in_combat = True
-    primarch2.in_combat = True
+    active_primarch.in_combat = True
+    reactive_primarch.in_combat = True
     print("##Start of fight subphase##")
-    ended = fightSubPhase(primarch1, primarch2, num_round, MODE_CHARGE)
+    ended = fightSubPhase(active_primarch, reactive_primarch, num_round, MODE_CHARGE)
     if ended:
         return ended
     print("#End of fight subphase#")
     #none of these really has an ordering
     
     #handle Concuss
-    if primarch1.underConcuss > 0:
-        primarch1.underConcuss = primarch1.underConcuss - 1
-        if primarch1.underConcuss == 0:
-            print("%s is no longer concussed" % (primarch1.name))
-            primarch1.restoreI()
-    if primarch2.underConcuss > 0:
-        primarch2.underConcuss = primarch2.underConcuss - 1
-        if primarch2.underConcuss == 0:
-            print("%s is no longer concussed" % (primarch2.name))
-            primarch2.restoreI()
+    if active_primarch.underConcuss > 0:
+        active_primarch.underConcuss = active_primarch.underConcuss - 1
+        if active_primarch.underConcuss == 0:
+            print("%s is no longer concussed" % (active_primarch.name))
+            active_primarch.restoreI()
+    if reactive_primarch.underConcuss > 0:
+        reactive_primarch.underConcuss = reactive_primarch.underConcuss - 1
+        if reactive_primarch.underConcuss == 0:
+            print("%s is no longer concussed" % (reactive_primarch.name))
+            reactive_primarch.restoreI()
 
     #Blind tests
-    if primarch1.takeBlindTest:
-        BlindTest(primarch1)
-    if primarch2.takeBlindTest:
-        BlindTest(primarch2)
+    if active_primarch.takeBlindTest:
+        BlindTest(active_primarch)
+    if reactive_primarch.takeBlindTest:
+        BlindTest(reactive_primarch)
 
     if MODE_CHARGE:
-            primarch1.charge = False
-            primarch2.charge = False
+            active_primarch.charge = False
+            reactive_primarch.charge = False
 
-    rules1 = getEndOfAssaultRules(primarch1)
+    rules1 = getEndOfAssaultRules(active_primarch)
     for rule in rules1:
-        rule[1](primarch1, num_round)
-    rules2 = getEndOfAssaultRules(primarch2)
+        rule[1](active_primarch, num_round)
+    rules2 = getEndOfAssaultRules(reactive_primarch)
     for rule in rules2:
-        rule[1](primarch2, num_round)
+        rule[1](reactive_primarch, num_round)
 
     #Hit and Run
     if MODE_CHARGE:
-        if "Hit and Run" in primarch1.rules and not primarch1.active:
-            attemptHitAndRun(primarch1, primarch2)
-        elif "Hit and Run" in primarch2.rules and not primarch2.active:
-            attemptHitAndRun(primarch2, primarch1)
+        if "Hit and Run" in reactive_primarch.rules:
+            attemptHitAndRun(reactive_primarch, active_primarch)
 
     return ended
 
@@ -657,45 +645,45 @@ def SoulBlazeTest(primarch1, num_round):
             resolveSaves(DummyPrimarch(), attacker_weapon, primarch1, num_round, woundRolls, "Shooting")
     return isDefeated(primarch1)
 
-def playerTurn(primarch1, primarch2, num_round, MODE_CHARGE):
-    primarch1.handleStartOfTurn()
-    primarch2.handleStartOfTurn()
+def playerTurn(active_primarch, reactive_primarch, num_round, MODE_CHARGE):
+    active_primarch.handleStartOfTurn()
+    reactive_primarch.handleStartOfTurn()
     #movement phase #whatever
     #shooting phase
     if MODE_CHARGE:
         print("###Shooting phase###")
-        primarch1.handleStartOfPhase()
-        primarch2.handleStartOfPhase()
-        ended = shootingPhase(primarch1, primarch2, num_round)
+        active_primarch.handleStartOfPhase()
+        reactive_primarch.handleStartOfPhase()
+        ended = shootingPhase(active_primarch, reactive_primarch, num_round)
         if ended:
             return ended
         print("###End of shooting phase###")
     #assault phase
     print("###Assault phase###")
-    primarch1.handleStartOfPhase()
-    primarch2.handleStartOfPhase()
-    ended = assaultPhase(primarch1, primarch2, num_round, MODE_CHARGE)
+    active_primarch.handleStartOfPhase()
+    reactive_primarch.handleStartOfPhase()
+    ended = assaultPhase(active_primarch, reactive_primarch, num_round, MODE_CHARGE)
     if ended:
         return ended
     print("###End of assault phase###")
 
     #blind
-    resolveBlindEnd(primarch1)
-    resolveBlindEnd(primarch2)
+    resolveBlindEnd(active_primarch)
+    resolveBlindEnd(reactive_primarch)
 
     #Soul Blaze
-    ended = SoulBlazeTest(primarch1, num_round)
+    ended = SoulBlazeTest(active_primarch, num_round)
     if ended:
         return ended
-    ended = SoulBlazeTest(primarch2, num_round)
+    ended = SoulBlazeTest(reactive_primarch, num_round)
     if ended:
         return ended
 
-    #cleanup
-    if primarch1.active:
-        IWNDTest(primarch1)
+    #IWND
+    if active_primarch.active:
+        IWNDTest(active_primarch)
     else:
-        IWNDTest(primarch2)
+        IWNDTest(reactive_primarch)
 
 def resolveBlindEnd(primarch1):
     if primarch1.underBlind > 0:
@@ -729,7 +717,10 @@ def duel(primarchA, primarchB, MODE_CHARGE):
     while not ended:
         print("Player Turn %d" % (player_turn + 1))
         #now actually do the turn!
-        ended = playerTurn(primarchA, primarchB, combat_round, MODE_CHARGE)
+        if primarchA.active:
+            ended = playerTurn(primarchA, primarchB, combat_round, MODE_CHARGE)
+        else:
+            ended = playerTurn(primarchB, primarchA, combat_round, MODE_CHARGE)
         if primarchA.in_combat and primarchB.in_combat:
             combat_round += 1
         else:
