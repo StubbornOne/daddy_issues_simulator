@@ -443,5 +443,5 @@ primarch_names = ["Lion", "Fulgrim", "Perturabo", "Khan",
                   "Ferrus", "Angron", "Guilliman", "Mortarion",
                   "Magnus", "Horus", "Lorgar", "Vulkan",
                   "Corax", "Alpharius",
-                  "Lion_Blade", "Fulgrim_Fireblade", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
+                  #"Lion_Blade", "Fulgrim_Fireblade", "Perturabo_Fists", "Khan_Afoot", "Sanguinius_Spear"
                   ]
