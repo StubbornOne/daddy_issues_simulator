@@ -680,10 +680,7 @@ def playerTurn(active_primarch, reactive_primarch, num_round, MODE_CHARGE):
         return ended
 
     #IWND
-    if active_primarch.active:
-        IWNDTest(active_primarch)
-    else:
-        IWNDTest(reactive_primarch)
+    IWNDTest(active_primarch)
 
 def resolveBlindEnd(primarch1):
     if primarch1.underBlind > 0:
